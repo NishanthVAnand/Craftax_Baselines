@@ -3,7 +3,7 @@
 #SBATCH --time=15:0:0
 #SBATCH --mem=32GB
 #SBATCH --gres=gpu:80GB:3
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=16
 #SBATCH --output=output/ppo_linear_%j.out
 #SBATCH --error=output/ppo_linear_%j.err
 
