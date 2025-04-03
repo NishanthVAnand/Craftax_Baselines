@@ -254,3 +254,18 @@ class ActorCriticWithEmbedding(nn.Module):
         )
 
         return pi, jnp.squeeze(critic, axis=-1), actor_emb
+
+
+class ActorCriticLinear(nn.Module):
+    action_dim: Sequence[int]
+
+    @nn.compact
+    def __call__(self, x):
+        actor_mean = nn.Dense(
+            self.action_dim, kernel_init=orthogonal(0.01), bias_init=constant(0.0)
+        )(x)
+        pi = distrax.Categorical(logits=actor_mean)
+
+        critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(x)
+
+        return pi, jnp.squeeze(critic, axis=-1)
