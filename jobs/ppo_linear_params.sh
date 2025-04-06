@@ -2,7 +2,7 @@
 
 all_lrs1=(3e-5)
 #all_lrs1=(3e-4 3e-6) sami will test these
-all_seeds=(0 1 2)
+all_seeds=(0)
 
 for lr1 in ${all_lrs1[@]}; do
 	for seed in ${all_seeds[@]}; do

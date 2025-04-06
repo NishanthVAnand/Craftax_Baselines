@@ -25,6 +25,7 @@ from models.actor_critic import (
     ActorCritic,
     ActorCriticConv,
     ActorCriticLinear,
+    ActorCriticOneLayer,
 )
 
 from models.icm import ICMEncoder, ICMForward, ICMInverse
@@ -92,7 +93,7 @@ def make_train(config):
             if config["NETWORK_TYPE"] == "ActorCriticLinear":
                 network = ActorCriticLinear(env.action_space(env_params).n)
             else:
-                network = ActorCritic(
+                network = ActorCriticOneLayer(
                     env.action_space(env_params).n, config["LAYER_SIZE"]
                 )
         else:

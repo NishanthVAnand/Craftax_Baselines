@@ -1,9 +1,11 @@
 #!/bin/bash
 
-#SBATCH --time=15:0:0
+#SBATCH --time=9:0:0
 #SBATCH --mem=32GB
-#SBATCH --gres=gpu:80GB:3
-#SBATCH --cpus-per-task=16
+#SBATCH --gres=gpu:48GB:4
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=32
+#SBATCH --ntasks=1
 #SBATCH --output=output/ppo_linear_%j.out
 #SBATCH --error=output/ppo_linear_%j.err
 
