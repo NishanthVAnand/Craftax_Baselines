@@ -1,0 +1,260 @@
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-03 19:06:58.971403: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.89s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.78s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.72s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.20s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.41s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250403_190711-njcvn2bm
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/njcvn2bm
+/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:194: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+slurmstepd: error: *** JOB 6519386 ON cn-g011 CANCELLED AT 2025-04-03T19:54:39 DUE TO PREEMPTION ***
+slurmstepd: error: container_p_join: open failed for /var/opt/slurm/localstorage/6519386/.ns: No such file or directory
+slurmstepd: error: container_g_join(6519386): No such file or directory
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-03 20:07:24.426786: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.84s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.40s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:07<00:02,  2.52s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.71s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.94s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250403_200743-gaesa0em
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/gaesa0em
+/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:194: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+slurmstepd: error: *** JOB 6519386 ON cn-g007 CANCELLED AT 2025-04-03T20:34:16 DUE TO PREEMPTION ***
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-03 21:01:45.280745: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:07,  2.34s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.39s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:06<00:02,  2.32s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.56s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.85s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250403_210204-0xzjhb5x
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/0xzjhb5x
+/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:194: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+slurmstepd: error: *** JOB 6519386 ON cn-g017 CANCELLED AT 2025-04-03T21:52:55 DUE TO PREEMPTION ***
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-03 21:59:07.406925: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.83s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.80s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.76s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.22s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.43s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250403_215920-1yq2t9hq
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/1yq2t9hq
+slurmstepd: error: *** JOB 6519386 ON cn-g017 CANCELLED AT 2025-04-03T21:59:36 DUE TO PREEMPTION ***
+slurmstepd: error: container_p_join: open failed for /var/opt/slurm/localstorage/6519386/.ns: No such file or directory
+slurmstepd: error: container_g_join(6519386): No such file or directory
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-03 22:54:14.659587: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.51s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.51s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.59s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.11s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.27s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250403_225431-gaac6s7j
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/gaac6s7j
+/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:194: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+slurmstepd: error: *** JOB 6519386 ON cn-g016 CANCELLED AT 2025-04-03T23:20:55 DUE TO PREEMPTION ***
+slurmstepd: error: container_p_join: open failed for /var/opt/slurm/localstorage/6519386/.ns: No such file or directory
+slurmstepd: error: container_g_join(6519386): No such file or directory
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-03 23:52:11.212799: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.78s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.82s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.83s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.26s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.46s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250403_235229-owd3bk9w
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/owd3bk9w
+/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:194: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+slurmstepd: error: *** JOB 6519386 ON cn-g028 CANCELLED AT 2025-04-04T00:18:57 DUE TO PREEMPTION ***
+slurmstepd: error: container_p_join: open failed for /var/opt/slurm/localstorage/6519386/.ns: No such file or directory
+slurmstepd: error: container_g_join(6519386): No such file or directory
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-04 01:23:16.689743: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.2 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:07,  2.40s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.42s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:07<00:02,  2.41s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.67s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.94s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250404_012338-lkwgel94
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/lkwgel94
+/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:194: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+ERROR:jax._src.callback:jax.pure_callback failed
+Traceback (most recent call last):
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 86, in pure_callback_impl
+    return tree_util.tree_map(np.asarray, callback(*args))
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 64, in __call__
+    return tree_util.tree_leaves(self.callback_func(*args, **kwargs))
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/llm_observation.py", line 72, in get_llm_obs
+    hidden_states = llm_pretrained(**batch_tokens, output_hidden_states=True)[
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_dynamo/eval_frame.py", line 574, in _fn
+    return fn(*args, **kwargs)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/accelerate/hooks.py", line 170, in new_forward
+    def new_forward(module, *args, **kwargs):
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_dynamo/eval_frame.py", line 745, in _fn
+    return fn(*args, **kwargs)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/aot_autograd.py", line 1184, in forward
+    return compiled_fn(full_args)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 323, in runtime_wrapper
+    all_outs = call_func_at_runtime_with_args(
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/utils.py", line 126, in call_func_at_runtime_with_args
+    out = normalize_as_list(f(args))
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 672, in inner_fn
+    outs = compiled_fn(args)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 490, in wrapper
+    return compiled_fn(runtime_args)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/output_code.py", line 466, in __call__
+    return self.current_callable(inputs)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/utils.py", line 2128, in run
+    return model(new_inputs)
+  File "/tmp/torchinductor_anandnis/dw/cdw7i3m2isir4l5dt6dn5hgml5e5si4jdwgexsy4kupy7rerhfed.py", line 3092, in call
+    buf243 = torch.ops.aten._scaled_dot_product_efficient_attention.default(buf239, buf240, buf241, reinterpret_tensor(buf242, (256, 32, s0, s0), (s0*s0 + 8*s0 + ((-1)*s0*(s0 % 8)), 0, 8 + s0 + ((-1)*(s0 % 8)), 1), 0), False, scale=0.08838834764831845)
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_ops.py", line 723, in __call__
+    return self._op(*args, **kwargs)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.44 GiB. GPU 1 has a total capacity of 79.15 GiB of which 2.17 GiB is free. Including non-PyTorch memory, this process has 76.96 GiB memory in use. Of the allocated memory 74.99 GiB is allocated by PyTorch, and 1.48 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+E0404 02:20:56.832536  556063 pjrt_stream_executor_client.cc:2985] Execution of replica 0 failed: INTERNAL: CustomCall failed: CpuCallback error: Traceback (most recent call last):
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo_llm.py", line 787, in <module>
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo_llm.py", line 688, in run_ppo
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/traceback_util.py", line 179, in reraise_with_filtered_traceback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/api.py", line 1214, in vmap_f
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/linear_util.py", line 192, in call_wrapped
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/traceback_util.py", line 179, in reraise_with_filtered_traceback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 327, in cache_miss
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 185, in _python_pjit_helper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 2834, in bind
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 420, in bind_with_trace
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/interpreters/batching.py", line 433, in process_primitive
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1895, in _pjit_batcher
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 2834, in bind
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 420, in bind_with_trace
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 921, in process_primitive
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1635, in _pjit_call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1614, in call_impl_cache_miss
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1568, in _pjit_call_impl_python
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/profiler.py", line 335, in wrapper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/interpreters/pxla.py", line 1244, in __call__
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/interpreters/mlir.py", line 2477, in _wrapped_callback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 228, in _callback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 89, in pure_callback_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 64, in __call__
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/llm_observation.py", line 72, in get_llm_obs
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_dynamo/eval_frame.py", line 584, in _fn
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/accelerate/hooks.py", line 170, in new_forward
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_dynamo/eval_frame.py", line 748, in _fn
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/aot_autograd.py", line 1184, in forward
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 328, in runtime_wrapper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/utils.py", line 135, in call_func_at_runtime_with_args
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 672, in inner_fn
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 490, in wrapper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/output_code.py", line 468, in __call__
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/utils.py", line 2128, in run
+  File "/tmp/torchinductor_anandnis/dw/cdw7i3m2isir4l5dt6dn5hgml5e5si4jdwgexsy4kupy7rerhfed.py", line 3640, in call
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_ops.py", line 723, in __call__
+OutOfMemoryError: CUDA out of memory. Tried to allocate 2.44 GiB. GPU 1 has a total capacity of 79.15 GiB of which 2.17 GiB is free. Including non-PyTorch memory, this process has 76.96 GiB memory in use. Of the allocated memory 74.99 GiB is allocated by PyTorch, and 1.48 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo_llm.py", line 787, in <module>
+    run_ppo(args)
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo_llm.py", line 688, in run_ppo
+    out = train_vmap(rngs)
+jaxlib.xla_extension.XlaRuntimeError: INTERNAL: CustomCall failed: CpuCallback error: Traceback (most recent call last):
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo_llm.py", line 787, in <module>
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo_llm.py", line 688, in run_ppo
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/traceback_util.py", line 179, in reraise_with_filtered_traceback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/api.py", line 1214, in vmap_f
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/linear_util.py", line 192, in call_wrapped
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/traceback_util.py", line 179, in reraise_with_filtered_traceback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 327, in cache_miss
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 185, in _python_pjit_helper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 2834, in bind
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 420, in bind_with_trace
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/interpreters/batching.py", line 433, in process_primitive
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1895, in _pjit_batcher
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 2834, in bind
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 420, in bind_with_trace
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/core.py", line 921, in process_primitive
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1635, in _pjit_call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1614, in call_impl_cache_miss
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/pjit.py", line 1568, in _pjit_call_impl_python
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/profiler.py", line 335, in wrapper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/interpreters/pxla.py", line 1244, in __call__
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/interpreters/mlir.py", line 2477, in _wrapped_callback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 228, in _callback
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 89, in pure_callback_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/jax/_src/callback.py", line 64, in __call__
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/llm_observation.py", line 72, in get_llm_obs
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_dynamo/eval_frame.py", line 584, in _fn
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/accelerate/hooks.py", line 170, in new_forward
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_dynamo/eval_frame.py", line 748, in _fn
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/aot_autograd.py", line 1184, in forward
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 328, in runtime_wrapper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/utils.py", line 135, in call_func_at_runtime_with_args
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 672, in inner_fn
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 490, in wrapper
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/output_code.py", line 468, in __call__
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_inductor/utils.py", line 2128, in run
+  File "/tmp/torchinductor_anandnis/dw/cdw7i3m2isir4l5dt6dn5hgml5e5si4jdwgexsy4kupy7rerhfed.py", line 3640, in call
+  File "/home/mila/a/anandnis/crafter_jax/lib/python3.9/site-packages/torch/_ops.py", line 723, in __call__
+OutOfMemoryError: CUDA out of memory. Tried to allocate 2.44 GiB. GPU 1 has a total capacity of 79.15 GiB of which 2.17 GiB is free. Including non-PyTorch memory, this process has 76.96 GiB memory in use. Of the allocated memory 74.99 GiB is allocated by PyTorch, and 1.48 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
