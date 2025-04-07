@@ -193,6 +193,20 @@ distance_lookup = generate_distance_dict(
 def symbolic_to_text_numpy(symbolic_array):
 
     text_description = []
+    meta_prompt = "You are an intelligent agent exploring the world of Craftax — a procedurally generated, open-ended survival game. "
+    meta_prompt += "It is a 2D tile-based environment with nearby tiles visible to you. The world has multiple floors, creatures, items, and hidden dangers. "
+    meta_prompt += "Each floor may contain valuable resources and dangerous enemies. "
+    meta_prompt += "Your goal is to survive, gather resources, and explore the world. Also, you should complete achievements and progress to get rewards. "
+    meta_prompt += "You will receive an observation below describing your current situation, you should focus on what is important to accomplish your goal. "
+    meta_prompt += "The first part of the observation contains the information about the blocks within the agent sight. "
+    meta_prompt += "The second part contains the information about the items types in your field of vision. "
+    meta_prompt += "The next part describes the mobile entities in the world. "
+    meta_prompt += "Then you will see the information about your inventory including potions which is useful to craft items. "
+    meta_prompt += "The next part contains the information about your intrinsic values. It is important to keep these values high to ensure you survive in the world. "
+    meta_prompt += "The last part contains the information about your equipment and their levels along with some special values. "
+
+    text_description.append(meta_prompt)
+    text_description.append("Observation: ")
 
     rows = np.arange(OBS_DIM[0])[:, None]
     cols = np.arange(OBS_DIM[1])[None, :]
