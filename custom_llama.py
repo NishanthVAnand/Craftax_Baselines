@@ -96,6 +96,11 @@ class CustomLlamaModel(LlamaModel):
 
         hidden_states = inputs_embeds
 
+        indices = attention_mask.sum(1)
+        indices_pick = torch.arange(indices.shape[0], device=indices.device).unsqueeze(
+            1
+        )
+        print(indices_pick.device, hidden_states.device)
         # create position embeddings to be shared across the decoder layers
         position_embeddings = self.rotary_emb(hidden_states, position_ids)
 
@@ -104,7 +109,7 @@ class CustomLlamaModel(LlamaModel):
         all_self_attns = () if output_attentions else None
 
         if output_hidden_states and 0 in target_layer:
-            all_hidden_states += (hidden_states.mean(axis=1),)
+            all_hidden_states += (hidden_states[:, indices_pick, :].mean(axis=1),)
 
         for idx, decoder_layer in enumerate(
             self.layers[: self.config.num_hidden_layers]
@@ -149,7 +154,7 @@ class CustomLlamaModel(LlamaModel):
 
         # add hidden states from the last decoder layer
         if output_hidden_states:
-            all_hidden_states += (hidden_states.mean(axis=1),)
+            all_hidden_states += (hidden_states[:, indices_pick, :].mean(axis=1),)
 
         return (all_hidden_states, all_self_attns)
 

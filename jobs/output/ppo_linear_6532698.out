@@ -6,7 +6,7 @@ Textures successfully loaded from cache.
 
 ==============NVSMI LOG==============
 
-Timestamp                                 : Sun Apr  6 23:41:29 2025
+Timestamp                                 : Mon Apr  7 00:15:04 2025
 Driver Version                            : 560.35.03
 CUDA Version                              : 12.6
 
@@ -15,7 +15,7 @@ GPU 00000000:01:00.0
     Accounting Mode                       : Enabled
     Accounting Mode Buffer Size           : 4000
     Accounted Processes
-        Process ID                        : 4030033
+        Process ID                        : 1830005
             GPU Utilization               : 0 %
             Memory Utilization            : 0 %
             Max memory usage              : 61536 MiB
@@ -26,10 +26,10 @@ GPU 00000000:41:00.0
     Accounting Mode                       : Enabled
     Accounting Mode Buffer Size           : 4000
     Accounted Processes
-        Process ID                        : 4030033
-            GPU Utilization               : 68 %
-            Memory Utilization            : 23 %
-            Max memory usage              : 39476 MiB
+        Process ID                        : 1830005
+            GPU Utilization               : 67 %
+            Memory Utilization            : 22 %
+            Max memory usage              : 37616 MiB
             Time                          : 0 ms
             Is Running                    : 1
 
@@ -37,10 +37,10 @@ GPU 00000000:81:00.0
     Accounting Mode                       : Enabled
     Accounting Mode Buffer Size           : 4000
     Accounted Processes
-        Process ID                        : 4030033
-            GPU Utilization               : 71 %
-            Memory Utilization            : 23 %
-            Max memory usage              : 39236 MiB
+        Process ID                        : 1830005
+            GPU Utilization               : 57 %
+            Memory Utilization            : 19 %
+            Max memory usage              : 24514 MiB
             Time                          : 0 ms
             Is Running                    : 1
 
@@ -48,14 +48,14 @@ GPU 00000000:C1:00.0
     Accounting Mode                       : Enabled
     Accounting Mode Buffer Size           : 4000
     Accounted Processes
-        Process ID                        : 4030033
-            GPU Utilization               : 70 %
-            Memory Utilization            : 24 %
-            Max memory usage              : 38936 MiB
+        Process ID                        : 1830005
+            GPU Utilization               : 60 %
+            Memory Utilization            : 20 %
+            Max memory usage              : 37456 MiB
             Time                          : 0 ms
             Is Running                    : 1
 
-Sun Apr  6 23:41:29 2025       
+Mon Apr  7 00:15:04 2025       
 +-----------------------------------------------------------------------------------------+
 | NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
 |-----------------------------------------+------------------------+----------------------+
@@ -64,19 +64,19 @@ Sun Apr  6 23:41:29 2025
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                    0 |
-| N/A   33C    P0             81W /  500W |   61545MiB /  81920MiB |      0%      Default |
+| N/A   36C    P0             80W /  500W |   61545MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                    0 |
-| N/A   40C    P0             96W /  500W |   23843MiB /  81920MiB |      0%      Default |
+| N/A   68C    P0            503W /  500W |   37525MiB /  81920MiB |    100%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                    0 |
-| N/A   74C    P0            517W /  500W |   37105MiB /  81920MiB |    100%      Default |
+| N/A   50C    P0            103W /  500W |   24103MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                    0 |
-| N/A   37C    P0             93W /  500W |   23283MiB /  81920MiB |      0%      Default |
+| N/A   65C    P0            503W /  500W |   36885MiB /  81920MiB |    100%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
                                                                                          
@@ -85,8 +85,8 @@ Sun Apr  6 23:41:29 2025
 |  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
 |        ID   ID                                                               Usage      |
 |=========================================================================================|
-|    0   N/A  N/A   4030033      C   python                                      61536MiB |
-|    1   N/A  N/A   4030033      C   python                                      23834MiB |
-|    2   N/A  N/A   4030033      C   python                                      37096MiB |
-|    3   N/A  N/A   4030033      C   python                                      23274MiB |
+|    0   N/A  N/A   1830005      C   python                                      61536MiB |
+|    1   N/A  N/A   1830005      C   python                                      37516MiB |
+|    2   N/A  N/A   1830005      C   python                                      24094MiB |
+|    3   N/A  N/A   1830005      C   python                                      36876MiB |
 +-----------------------------------------------------------------------------------------+
