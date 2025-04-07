@@ -97,14 +97,10 @@ class CustomLlamaModel(LlamaModel):
 
         hidden_states = inputs_embeds
 
-        indices = attention_mask.sum(1)
-        indices_pick = torch.arange(indices.shape[0], device=indices.device).unsqueeze(
-            1
-        )
-
-        batch_size, seq_len, _ = hidden_states.shape
+        indices = attention_mask.sum(1) - 1
+        _, seq_len, _ = hidden_states.shape
         distance_from_last = indices.unsqueeze(1) - torch.arange(
-            batch_size, device=indices.device
+            seq_len, device=indices.device
         )
         weights = (decay**distance_from_last) * attention_mask
 
@@ -151,7 +147,10 @@ class CustomLlamaModel(LlamaModel):
                 )
 
             if output_hidden_states and (idx + 1) in target_layer:
-                all_hidden_states += (layer_outputs[0].mean(axis=1),)
+                temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
+                all_hidden_states += (
+                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                )
                 if output_attentions:
                     all_self_attns += (layer_outputs[1],)
 
@@ -164,7 +163,10 @@ class CustomLlamaModel(LlamaModel):
 
         # add hidden states from the last decoder layer
         if output_hidden_states:
-            all_hidden_states += (hidden_states[:, indices_pick, :].mean(axis=1),)
+            temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
+            all_hidden_states += (
+                temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+            )
 
         return (all_hidden_states, all_self_attns)
 
