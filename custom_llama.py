@@ -33,6 +33,7 @@ class CustomLlamaModel(LlamaModel):
         output_hidden_states: Optional[bool] = None,
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
+        decay: Optional[float] = 0.9,
         **flash_attn_kwargs: Unpack[FlashAttentionKwargs],
     ) -> Tuple[Tuple, Tuple]:
         """
@@ -100,7 +101,13 @@ class CustomLlamaModel(LlamaModel):
         indices_pick = torch.arange(indices.shape[0], device=indices.device).unsqueeze(
             1
         )
-        print(indices_pick.device, hidden_states.device)
+
+        batch_size, seq_len, _ = hidden_states.shape
+        distance_from_last = indices.unsqueeze(1) - torch.arange(
+            batch_size, device=indices.device
+        )
+        weights = (decay**distance_from_last) * attention_mask
+
         # create position embeddings to be shared across the decoder layers
         position_embeddings = self.rotary_emb(hidden_states, position_ids)
 
@@ -109,7 +116,10 @@ class CustomLlamaModel(LlamaModel):
         all_self_attns = () if output_attentions else None
 
         if output_hidden_states and 0 in target_layer:
-            all_hidden_states += (hidden_states[:, indices_pick, :].mean(axis=1),)
+            temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
+            all_hidden_states += (
+                temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+            )
 
         for idx, decoder_layer in enumerate(
             self.layers[: self.config.num_hidden_layers]
@@ -177,6 +187,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
         output_hidden_states: Optional[bool] = None,
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
+        decay: Optional[float] = 0.9,
         logits_to_keep: Union[int, torch.Tensor] = 0,
         **kwargs: Unpack[KwargsForCausalLM],
     ) -> Tuple[Tuple, Tuple]:
@@ -203,6 +214,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
             output_hidden_states=output_hidden_states,
             cache_position=cache_position,
             target_layer=target_layer,
+            decay=decay,
             **kwargs,
         )
         hidden_states, all_self_attns = outputs

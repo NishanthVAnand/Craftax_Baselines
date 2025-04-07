@@ -1,19 +1,0 @@
-[=== Module python/3.9 loaded ===]
-[=== Module cudatoolkit/12.6.0 loaded ===]
-[=== Module python/3.9 loaded ===]
-[=== Module cudatoolkit/12.6.0 loaded ===]
-2025-04-07 00:53:20.243520: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
-Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.27s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.34s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.93s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.38s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.46s/it]
-Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.45s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.62s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:06<00:02,  2.23s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.63s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.72s/it]
-Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:07,  2.40s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:05<00:05,  2.77s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:08<00:02,  2.85s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:09<00:00,  2.07s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:09<00:00,  2.31s/it]
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.19.8
-wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250407_005414-mjz3bvkp
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run LLM-Craftax-Symbolic-v1-1M
-wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
-wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/mjz3bvkp
-slurmstepd: error: *** JOB 6532799 ON cn-g010 CANCELLED AT 2025-04-07T02:04:03 ***
-slurmstepd: error: container_p_join: open failed for /var/opt/slurm/localstorage/6532799/.ns: No such file or directory
-slurmstepd: error: container_g_join(6532799): No such file or directory

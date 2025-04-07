@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from text_wrapper import *
+from crafter_jax.Craftax_Baselines.text_wrapper_craftax import *
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from custom_llama import CustomLlamaForCausalLM
@@ -23,6 +23,7 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 # device = torch.device("cuda:1")
 
+num_gpus = torch.cuda.device_count()
 local_dir = "/network/weights/llama.var/llama_3.1/Meta-Llama-3.1-8B-Instruct/"
 
 llm_pretrained_all = [
@@ -33,7 +34,7 @@ llm_pretrained_all = [
     )
     .to(f"cuda:{i}")
     .eval()
-    for i in [1, 2, 3]
+    for i in range(1, num_gpus)
 ]
 tokenizer = AutoTokenizer.from_pretrained(local_dir)
 
@@ -49,7 +50,7 @@ for llm_pretrained in llm_pretrained_all:
             embedding_dim
         )
 
-llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(3)]
+llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
 
 def gpu_inference(i, text_obs_chunk, layer):
@@ -80,13 +81,13 @@ def get_llm_obs(obs, layer):
         curr_text = "\n".join(curr_text_list)
         text_obs.append(curr_text)
 
-    text_obs_chunks = [text_obs[i::3] for i in range(3)]
+    text_obs_chunks = [text_obs[i :: num_gpus - 1] for i in range(num_gpus - 1)]
 
     embed = []
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=range(num_gpus - 1)) as executor:
         futures = [
             executor.submit(gpu_inference, i, text_obs_chunks[i], layer)
-            for i in range(3)
+            for i in range(num_gpus - 1)
         ]
         for future in futures:
             embed.append(future.result().cpu().numpy().astype(np.float32))
