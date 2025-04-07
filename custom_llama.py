@@ -33,7 +33,7 @@ class CustomLlamaModel(LlamaModel):
         output_hidden_states: Optional[bool] = None,
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
-        decay: Optional[float] = 0.9,
+        decay: Optional[float] = 0.99,
         emb_type: Optional[str] = "mean",
         **flash_attn_kwargs: Unpack[FlashAttentionKwargs],
     ) -> Tuple[Tuple, Tuple]:
@@ -213,7 +213,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
         output_hidden_states: Optional[bool] = None,
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
-        decay: Optional[float] = 0.9,
+        decay: Optional[float] = 0.99,
         emb_type: Optional[str] = "mean",
         logits_to_keep: Union[int, torch.Tensor] = 0,
         **kwargs: Unpack[KwargsForCausalLM],

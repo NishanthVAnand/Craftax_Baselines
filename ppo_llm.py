@@ -142,6 +142,7 @@ def make_train(config):
                 return_dtype,
                 sample_obs,
                 config["LAYER"],
+                config["EMB_TYPE"],
             )
             obs_shape = obs_llm.shape[0]
 
@@ -231,6 +232,7 @@ def make_train(config):
             return_dtype,
             obsv_old,
             config["LAYER"],
+            config["EMB_TYPE"],
         )
 
         # TRAIN LOOP
@@ -265,6 +267,7 @@ def make_train(config):
                     return_dtype,
                     obsv_old,
                     config["LAYER"],
+                    config["EMB_TYPE"],
                 )
 
                 reward_i = jnp.zeros(config["NUM_ENVS"])
@@ -748,6 +751,7 @@ if __name__ == "__main__":
     parser.add_argument("--optimistic_reset_ratio", type=int, default=16)
     parser.add_argument("--network_type", type=str, default="ActorCriticLinear")
     parser.add_argument("--layer", type=int, default=17)
+    parser.add_argument("--emb_type", type=int, default=0, help="0: mean, 1: exp")
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)

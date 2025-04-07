@@ -15,4 +15,4 @@ source ~/crafter_jax/bin/activate
 cd ..
 
 echo "$@"
-python ppo_llm.py --total_timesteps=$1 --num_envs=256 --lr=$2 --num_steps=16 --wandb_project="LLM-play" --wandb_entity="doina-precup" --seed=$3 --network_type="ActorCriticOneLayer"
+python ppo_llm.py --total_timesteps=$1 --num_envs=256 --lr=$2 --num_steps=16 --wandb_project="LLM-play" --wandb_entity="doina-precup" --seed=$3 --network_type="ActorCriticOneLayer" --layer=$4 --emb_type=$5
