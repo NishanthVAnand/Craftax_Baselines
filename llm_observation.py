@@ -23,8 +23,6 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 # device = torch.device("cuda:1")
 
-emb_dict_map = {0: "mean", 1: "exp"}
-
 num_gpus = torch.cuda.device_count()
 local_dir = "/network/weights/llama.var/llama_3.1/Meta-Llama-3.1-8B-Instruct/"
 
@@ -54,6 +52,8 @@ for llm_pretrained in llm_pretrained_all:
 
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
+emb_dict_map = {0: "mean", 1: "exp"}
+
 
 def gpu_inference(i, text_obs_chunk, layer, emb_type):
     with torch.no_grad():
@@ -72,12 +72,13 @@ def gpu_inference(i, text_obs_chunk, layer, emb_type):
             target_layer=[layer],
             emb_type=emb_dict_map[emb_type],
         )
-
     return hidden_states[0]
 
 
 def get_llm_obs(obs, layer, emb_type):
     obs = np.array(obs)
+    layer = int(layer.item())
+    emb_type = int(emb_type.item())
     text_obs = []
     for curr_obs in obs:
         curr_text_list = symbolic_to_text_numpy(curr_obs)
