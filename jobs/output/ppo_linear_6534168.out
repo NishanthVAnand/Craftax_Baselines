@@ -1,0 +1,460 @@
+5e5 3e-4 0
+Loading Craftax textures from cache.
+Textures successfully loaded from cache.
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Apr  7 12:10:29 2025
+Driver Version                            : 560.35.03
+CUDA Version                              : 12.6
+
+Attached GPUs                             : 4
+GPU 00000000:01:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2127804
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61468 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:41:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2127804
+            GPU Utilization               : 3 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 17760 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:81:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2127804
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 17760 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:C1:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2127804
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 17760 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+Mon Apr  7 12:10:29 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                    0 |
+| N/A   29C    P0             78W /  500W |   61477MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                    0 |
+| N/A   28C    P0             80W /  500W |   17769MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                    0 |
+| N/A   29C    P0             76W /  500W |   17769MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   28C    P0             77W /  500W |   17769MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A   2127804      C   python                                      61468MiB |
+|    1   N/A  N/A   2127804      C   python                                      17760MiB |
+|    2   N/A  N/A   2127804      C   python                                      17760MiB |
+|    3   N/A  N/A   2127804      C   python                                      17760MiB |
++-----------------------------------------------------------------------------------------+
+5e5 3e-4 0
+Loading Craftax textures from cache.
+Textures successfully loaded from cache.
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Apr  7 12:32:05 2025
+Driver Version                            : 560.35.03
+CUDA Version                              : 12.6
+
+Attached GPUs                             : 4
+GPU 00000000:01:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2238787
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61536 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:41:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2238787
+            GPU Utilization               : 71 %
+            Memory Utilization            : 24 %
+            Max memory usage              : 40518 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:81:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2238787
+            GPU Utilization               : 65 %
+            Memory Utilization            : 22 %
+            Max memory usage              : 27334 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:C1:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2238787
+            GPU Utilization               : 64 %
+            Memory Utilization            : 22 %
+            Max memory usage              : 27074 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+Mon Apr  7 12:32:05 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                    0 |
+| N/A   37C    P0             80W /  500W |   61545MiB /  81920MiB |      5%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                    0 |
+| N/A   54C    P0            112W /  500W |   15901MiB /  81920MiB |     50%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                    0 |
+| N/A   59C    P0            111W /  500W |   15941MiB /  81920MiB |     24%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   52C    P0             99W /  500W |   15941MiB /  81920MiB |      7%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A   2238787      C   python                                      61536MiB |
+|    1   N/A  N/A   2238787      C   python                                      15892MiB |
+|    2   N/A  N/A   2238787      C   python                                      15932MiB |
+|    3   N/A  N/A   2238787      C   python                                      15932MiB |
++-----------------------------------------------------------------------------------------+
+5e5 3e-4 0
+Loading Craftax textures from cache.
+Textures successfully loaded from cache.
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Apr  7 12:51:33 2025
+Driver Version                            : 560.35.03
+CUDA Version                              : 12.6
+
+Attached GPUs                             : 4
+GPU 00000000:01:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2542500
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61536 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:41:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2542500
+            GPU Utilization               : 34 %
+            Memory Utilization            : 11 %
+            Max memory usage              : 27414 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:81:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2542500
+            GPU Utilization               : 34 %
+            Memory Utilization            : 12 %
+            Max memory usage              : 27334 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:C1:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2542500
+            GPU Utilization               : 33 %
+            Memory Utilization            : 11 %
+            Max memory usage              : 26834 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+Mon Apr  7 12:51:33 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                    0 |
+| N/A   35C    P0             80W /  500W |   61545MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                    0 |
+| N/A   67C    P0            513W /  500W |   27043MiB /  81920MiB |    100%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                    0 |
+| N/A   69C    P0            461W /  500W |   26983MiB /  81920MiB |    100%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   66C    P0            507W /  500W |   26803MiB /  81920MiB |    100%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A   2542500      C   python                                      61536MiB |
+|    1   N/A  N/A   2542500      C   python                                      27034MiB |
+|    2   N/A  N/A   2542500      C   python                                      26974MiB |
+|    3   N/A  N/A   2542500      C   python                                      26794MiB |
++-----------------------------------------------------------------------------------------+
+5e5 3e-4 0
+Loading Craftax textures from cache.
+Textures successfully loaded from cache.
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Apr  7 12:59:38 2025
+Driver Version                            : 560.35.03
+CUDA Version                              : 12.6
+
+Attached GPUs                             : 4
+GPU 00000000:01:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2543646
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61536 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:41:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2543646
+            GPU Utilization               : 61 %
+            Memory Utilization            : 21 %
+            Max memory usage              : 40518 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:81:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2543646
+            GPU Utilization               : 53 %
+            Memory Utilization            : 18 %
+            Max memory usage              : 27334 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:C1:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2543646
+            GPU Utilization               : 51 %
+            Memory Utilization            : 18 %
+            Max memory usage              : 27074 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+Mon Apr  7 12:59:38 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                    0 |
+| N/A   35C    P0             80W /  500W |   61545MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                    0 |
+| N/A   69C    P0            530W /  500W |   40389MiB /  81920MiB |    100%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                    0 |
+| N/A   51C    P0            101W /  500W |   26803MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   42C    P0             97W /  500W |   26743MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A   2543646      C   python                                      61536MiB |
+|    1   N/A  N/A   2543646      C   python                                      40378MiB |
+|    2   N/A  N/A   2543646      C   python                                      26794MiB |
+|    3   N/A  N/A   2543646      C   python                                      26734MiB |
++-----------------------------------------------------------------------------------------+
+5e5 3e-4 0
+Loading Craftax textures from cache.
+Textures successfully loaded from cache.
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Apr  7 14:00:48 2025
+Driver Version                            : 560.35.03
+CUDA Version                              : 12.6
+
+Attached GPUs                             : 4
+GPU 00000000:4A:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 84643
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 34822 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:61:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 84643
+            GPU Utilization               : 75 %
+            Memory Utilization            : 40 %
+            Max memory usage              : 40518 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:CA:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 84643
+            GPU Utilization               : 74 %
+            Memory Utilization            : 39 %
+            Max memory usage              : 28034 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+GPU 00000000:E1:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 84643
+            GPU Utilization               : 72 %
+            Memory Utilization            : 38 %
+            Max memory usage              : 27814 MiB
+            Time                          : 0 ms
+            Is Running                    : 1
+
+Mon Apr  7 14:00:48 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L40S                    On  |   00000000:4A:00.0 Off |                    0 |
+| N/A   36C    P0            107W /  350W |   34829MiB /  46068MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA L40S                    On  |   00000000:61:00.0 Off |                    0 |
+| N/A   60C    P0            257W /  350W |   26961MiB /  46068MiB |    100%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA L40S                    On  |   00000000:CA:00.0 Off |                    0 |
+| N/A   62C    P0            175W /  350W |   27721MiB /  46068MiB |     70%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA L40S                    On  |   00000000:E1:00.0 Off |                    0 |
+| N/A   62C    P0            267W /  350W |   27261MiB /  46068MiB |    100%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A     84643      C   python                                      34822MiB |
+|    1   N/A  N/A     84643      C   python                                      26954MiB |
+|    2   N/A  N/A     84643      C   python                                      27714MiB |
+|    3   N/A  N/A     84643      C   python                                      27254MiB |
++-----------------------------------------------------------------------------------------+

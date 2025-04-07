@@ -6,7 +6,7 @@ all_seeds=(0)
 
 for lr1 in ${all_lrs1[@]}; do
 	for seed in ${all_seeds[@]}; do
-		sbatch run_ppo_NN.sh $1 $lr1 $seed
+		sbatch run_ppo_NN.sh $1 $lr1 $seed $2
 	sleep 0.2;
 	done
 done

@@ -34,6 +34,7 @@ class CustomLlamaModel(LlamaModel):
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
         decay: Optional[float] = 0.9,
+        emb_type: Optional[str] = "mean",
         **flash_attn_kwargs: Unpack[FlashAttentionKwargs],
     ) -> Tuple[Tuple, Tuple]:
         """
@@ -98,11 +99,12 @@ class CustomLlamaModel(LlamaModel):
         hidden_states = inputs_embeds
 
         indices = attention_mask.sum(1) - 1
-        _, seq_len, _ = hidden_states.shape
-        distance_from_last = indices.unsqueeze(1) - torch.arange(
-            seq_len, device=indices.device
-        )
-        weights = (decay**distance_from_last) * attention_mask
+        if emb_type == "exp":
+            _, seq_len, _ = hidden_states.shape
+            distance_from_last = indices.unsqueeze(1) - torch.arange(
+                seq_len, device=indices.device
+            )
+            weights = (decay**distance_from_last) * attention_mask
 
         # create position embeddings to be shared across the decoder layers
         position_embeddings = self.rotary_emb(hidden_states, position_ids)
@@ -112,10 +114,16 @@ class CustomLlamaModel(LlamaModel):
         all_self_attns = () if output_attentions else None
 
         if output_hidden_states and 0 in target_layer:
-            temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
-            all_hidden_states += (
-                temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
-            )
+            if emb_type == "exp":
+                temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
+                all_hidden_states += (
+                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                )
+            elif emb_type == "mean":
+                all_hidden_states += (
+                    (hidden_states * attention_mask.unsqueeze(2)).sum(axis=1)
+                    / attention_mask.sum(axis=1).unsqueeze(1),
+                )
 
         for idx, decoder_layer in enumerate(
             self.layers[: self.config.num_hidden_layers]
@@ -146,27 +154,43 @@ class CustomLlamaModel(LlamaModel):
                     **flash_attn_kwargs,
                 )
 
+            hidden_states = layer_outputs[0]
+
             if output_hidden_states and (idx + 1) in target_layer:
-                temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
-                all_hidden_states += (
-                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
-                )
+                if emb_type == "exp":
+                    temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(
+                        axis=1
+                    )
+                    all_hidden_states += (
+                        temp_hidden_states
+                        / temp_hidden_states.sum(axis=1, keepdim=True),
+                    )
+                elif emb_type == "mean":
+                    all_hidden_states += (
+                        (hidden_states * attention_mask.unsqueeze(2)).sum(axis=1)
+                        / attention_mask.sum(axis=1).unsqueeze(1),
+                    )
+
                 if output_attentions:
                     all_self_attns += (layer_outputs[1],)
 
             if idx + 1 == max(target_layer):
                 return all_hidden_states, all_self_attns
 
-            hidden_states = layer_outputs[0]
-
         hidden_states = self.norm(hidden_states)
 
         # add hidden states from the last decoder layer
         if output_hidden_states:
-            temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
-            all_hidden_states += (
-                temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
-            )
+            if emb_type == "exp":
+                temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
+                all_hidden_states += (
+                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                )
+            elif emb_type == "mean":
+                all_hidden_states += (
+                    (hidden_states * attention_mask.unsqueeze(2)).sum(axis=1)
+                    / attention_mask.sum(axis=1).unsqueeze(1),
+                )
 
         return (all_hidden_states, all_self_attns)
 
@@ -190,6 +214,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
         decay: Optional[float] = 0.9,
+        emb_type: Optional[str] = "mean",
         logits_to_keep: Union[int, torch.Tensor] = 0,
         **kwargs: Unpack[KwargsForCausalLM],
     ) -> Tuple[Tuple, Tuple]:
@@ -217,6 +242,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
             cache_position=cache_position,
             target_layer=target_layer,
             decay=decay,
+            emb_type=emb_type,
             **kwargs,
         )
         hidden_states, all_self_attns = outputs
