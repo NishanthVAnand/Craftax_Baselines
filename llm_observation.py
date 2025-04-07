@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from crafter_jax.Craftax_Baselines.text_wrapper_craftax import *
+from text_wrapper_craftax import *
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from custom_llama import CustomLlamaForCausalLM
@@ -84,7 +84,7 @@ def get_llm_obs(obs, layer):
     text_obs_chunks = [text_obs[i :: num_gpus - 1] for i in range(num_gpus - 1)]
 
     embed = []
-    with ThreadPoolExecutor(max_workers=range(num_gpus - 1)) as executor:
+    with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
         futures = [
             executor.submit(gpu_inference, i, text_obs_chunks[i], layer)
             for i in range(num_gpus - 1)
