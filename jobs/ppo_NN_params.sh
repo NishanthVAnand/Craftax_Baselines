@@ -1,6 +1,6 @@
 #!/bin/bash
 
-all_lrs1=(3e-4)
+all_lrs1=(3e-5)
 #all_lrs1=(3e-4 3e-6) sami will test these
 all_seeds=(0)
 
