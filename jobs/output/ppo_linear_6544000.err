@@ -1,0 +1,35 @@
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-08 15:54:17.844257: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.51s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.60s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.57s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.17s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.32s/it]
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.04s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.91s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.69s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.29s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.49s/it]
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.60s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.47s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.42s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.11s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.25s/it]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250408_155502-h1g2mao7
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-0M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/h1g2mao7
+slurmstepd: error: *** JOB 6544000 ON cn-g003 CANCELLED AT 2025-04-08T15:58:29 DUE TO PREEMPTION ***
+slurmstepd: error: container_p_join: open failed for /var/opt/slurm/localstorage/6544000/.ns: No such file or directory
+slurmstepd: error: container_g_join(6544000): No such file or directory
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-08 16:12:41.774746: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.04s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:01<00:01,  1.18it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.25s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.20it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.09it/s]
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  2.00it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  2.18it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  2.26it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  3.24it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.75it/s]
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:01,  1.97it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:01<00:01,  1.70it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:01<00:00,  1.95it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.84it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  2.38it/s]
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250408_161313-tk2ip5ey
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run LLM-Craftax-Symbolic-v1-0M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/tk2ip5ey

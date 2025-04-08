@@ -213,8 +213,8 @@ def symbolic_to_text_numpy(symbolic_array):
 
     # Block types description
     symbolic_array_map_blocks = symbolic_array_map_reshaped[:, :, :37]
-    block_types = np.argmax(symbolic_array_map_blocks, axis=-1)
-    if block_types.sum() > 0:
+    if symbolic_array_map_blocks.sum() > 0:
+        block_types = np.argmax(symbolic_array_map_blocks, axis=-1)
         text_description.append("Block types: ")
         unique_blocks = np.unique(block_types)
         unique_blocks = unique_blocks[~np.isin(unique_blocks, [0, 1])]
@@ -240,8 +240,8 @@ def symbolic_to_text_numpy(symbolic_array):
 
     # Item types description
     symbolic_array_map_item = symbolic_array_map_reshaped[:, :, 37:42]
-    item_types = np.argmax(symbolic_array_map_item, axis=-1)
-    if item_types.sum() > 0:
+    if symbolic_array_map_item.sum() > 0:
+        item_types = np.argmax(symbolic_array_map_item, axis=-1)
         text_description.append("Item types: ")
         unique_items = np.unique(item_types)
         unique_items = unique_items[unique_items != 0]  # Exclude the "None" item type
@@ -267,8 +267,8 @@ def symbolic_to_text_numpy(symbolic_array):
 
     # Mob types description
     symbolic_array_map_mobs = symbolic_array_map_reshaped[:, :, 42:82]
-    mob_types = np.argmax(symbolic_array_map_mobs, axis=-1)
-    if mob_types.sum() > 0:
+    if symbolic_array_map_mobs.sum() > 0:
+        mob_types = np.argmax(symbolic_array_map_mobs, axis=-1)
         text_description.append("Mob types: ")
         unique_mobs = np.unique(mob_types)
         for mob in unique_mobs:
