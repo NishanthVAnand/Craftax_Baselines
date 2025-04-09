@@ -206,7 +206,9 @@ def symbolic_to_text_numpy(symbolic_array):
 
     rows = np.arange(OBS_DIM[0])[:, None]
     cols = np.arange(OBS_DIM[1])[None, :]
-    distance_matrix = np.abs(rows - 4) + np.abs(cols - 5)
+    distance_matrix = np.abs(rows - (OBS_DIM[0] - 1) // 2) + np.abs(
+        cols - (OBS_DIM[1] - 1) // 2
+    )
     max_distance = 100  # max distance to get rid of zeros
 
     symbolic_array_map = symbolic_array[:8217]
@@ -295,26 +297,40 @@ def symbolic_to_text_numpy(symbolic_array):
         text_description.append("Inventory: ")
         for inv_idx in inventory_array:
             item_count = symbolic_array[8217:8233][inv_idx]
-            text_description.append(Inventory_Items[inv_idx] + ": " + str(item_count))
+            text_description.append(
+                "The agent has "
+                + str(item_count)
+                + " units of "
+                + Inventory_Items[inv_idx]
+            )
 
     potions_array = np.argwhere(symbolic_array[8233:8239] > 0).flatten()
     if potions_array.size > 0:
         text_description.append("Potions: ")
         for potion_idx in potions_array:
             potion_count = symbolic_array[8233:8239][potion_idx]
-            text_description.append(Potion_Items[potion_idx] + ": " + str(potion_count))
+            text_description.append(
+                "The agent has "
+                + str(potion_count)
+                + " units of "
+                + Potion_Items[potion_idx]
+            )
 
     intrinsic_array = symbolic_array[8239:8248]
     text_description.append("Intrinsic values: ")
     for intrinsic_idx in range(len(Intrinsic_Items)):
         intrinsic_value = intrinsic_array[intrinsic_idx]
         text_description.append(
-            Intrinsic_Items[intrinsic_idx] + ": " + str(intrinsic_value * 10) + "/10"
+            "The agent's "
+            + Intrinsic_Items[intrinsic_idx]
+            + " is "
+            + str(np.ceil(intrinsic_value * 10))
+            + "/10"
         )
 
     direction_array = symbolic_array[8248:8252]
     text_description.append(
-        "Direction: " + Direction[np.argwhere(direction_array == 1).item()]
+        "The agent is facing " + Direction[np.argwhere(direction_array == 1).item()]
     )
 
     # Equipment levels and enchantments
@@ -367,7 +383,7 @@ def symbolic_to_text_numpy(symbolic_array):
         )
 
     text_description.append(
-        "Light Level (Day/Night Cycle): " + str(symbolic_array[8260])
+        "The light level is " + str(np.around(symbolic_array[8260], 2))
     )
 
     if symbolic_array[8261] == 1:

@@ -36,8 +36,6 @@ from wrappers import (
     AutoResetEnvWrapper,
 )
 
-from llm_observation import *
-
 # Code adapted from the original implementation made by Chris Lu
 # Original code located at https://github.com/luchris429/purejaxrl
 
@@ -777,6 +775,11 @@ if __name__ == "__main__":
         assert args.icm_reward_coeff == 0
     if args.seed is None:
         args.seed = np.random.randint(2**31)
+
+    if args.env_name == "Craftax-Symbolic-v1":
+        from llm_observation import *
+    else:
+        from llm_observation_classic import *
 
     if args.jit:
         run_ppo(args)
