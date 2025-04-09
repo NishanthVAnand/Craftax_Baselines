@@ -198,7 +198,7 @@ def symbolic_to_text_numpy(symbolic_array):
     meta_prompt += "Each floor may contain valuable resources and dangerous enemies. "
     meta_prompt += "Your goal is to survive, gather resources, and explore. You should also complete achievements (eg. sleeping) to get rewards. "
     meta_prompt += "You will receive an observation describing your current view divided between various sections such as blocks (grass, sand, etc), items (torch, ladder), "
-    meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, drink; very important for the agent to stay alive), "
+    meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, drink; very important to maintain eg. by sleeping for the agent to stay alive), "
     meta_prompt += "equipment (swords, helmets, armour), and special values. "
     meta_prompt += "Your task is to interpret this observation and provide a detailed description of your surroundings. "
     text_description.append(meta_prompt)
