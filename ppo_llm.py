@@ -94,7 +94,10 @@ def make_train(config):
 
         rng, _rng = jax.random.split(rng)
         # init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
-        init_x = jnp.zeros((1, 4096))  # 4096 is the size of the embedding from llama-8B
+        emb_dict_map = {0: 4096, 1: 4096, 2: 4096, 3: 4096, 4: 4096 * 4, 5: 4096}
+        init_x = jnp.zeros(
+            (1, emb_dict_map.get(config["EMB_TYPE"], 4096))
+        )  # 4096 is the size of the embedding from llama-8B
         network_params = network.init(_rng, init_x)
         if config["ANNEAL_LR"]:
             tx = optax.chain(
@@ -126,7 +129,7 @@ def make_train(config):
             # obs_shape = obs_shape[0]
             sample_obs = jnp.zeros(env.observation_space(env_params).shape)
             return_dtype = jax.ShapeDtypeStruct(
-                (config["NUM_ENVS"], 4096), jnp.float32
+                (config["NUM_ENVS"], emb_dict_map.get(config["EMB_TYPE"], 4096)), jnp.float32
             )  # 4096 is the size of the embedding from llama-8B
             obs_llm = jax.pure_callback(
                 get_llm_obs,

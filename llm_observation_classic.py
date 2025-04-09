@@ -39,7 +39,7 @@ for llm_pretrained in llm_pretrained_all:
 
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
-emb_dict_map = {0: "mean", 1: "exp"}
+emb_dict_map = {0: "mean", 1: "exp", 2: "last-10", 3: "last-20", 4: "eq-10", 5: "max"}
 
 
 def gpu_inference(i, text_obs_chunk, layer, emb_type):

@@ -33,7 +33,7 @@ class CustomLlamaModel(LlamaModel):
         output_hidden_states: Optional[bool] = None,
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
-        decay: Optional[float] = 0.99,
+        decay: Optional[float] = 0.5,
         emb_type: Optional[str] = "mean",
         **flash_attn_kwargs: Unpack[FlashAttentionKwargs],
     ) -> Tuple[Tuple, Tuple]:
@@ -98,6 +98,25 @@ class CustomLlamaModel(LlamaModel):
             distance_from_last = indices.unsqueeze(1) - torch.arange(seq_len, device=indices.device)
             weights = (decay**distance_from_last) * attention_mask
 
+        elif emb_type == "last-10":
+            batch_size, seq_len, hidden_dim = hidden_states.shape
+            safe_indices = torch.clamp(indices - 10, min=0)
+            last_10_indices = safe_indices.unsqueeze(1) + torch.arange(
+                10, device=indices.device
+            ).unsqueeze(0)
+
+        elif emb_type == "last-20":
+            batch_size, seq_len, hidden_dim = hidden_states.shape
+            safe_indices = torch.clamp(indices - 20, min=0)
+            last_20_indices = safe_indices.unsqueeze(1) + torch.arange(
+                20, device=indices.device
+            ).unsqueeze(0)
+
+        elif emb_type == "eq-4":
+            batch_size, _, _ = hidden_states.shape
+            steps = torch.linspace(0, 1, steps=4, device=indices.device).unsqueeze(0)
+            safe_indices = (steps * indices.unsqueeze(1)).long()
+
         # create position embeddings to be shared across the decoder layers
         position_embeddings = self.rotary_emb(hidden_states, position_ids)
 
@@ -115,6 +134,33 @@ class CustomLlamaModel(LlamaModel):
                 all_hidden_states += (
                     (hidden_states * attention_mask.unsqueeze(2)).sum(axis=1)
                     / attention_mask.sum(axis=1).unsqueeze(1),
+                )
+            elif emb_type == "last-10":
+                all_hidden_states += (
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_10_indices].mean(
+                        axis=1
+                    ),
+                )
+
+            elif emb_type == "last-20":
+                all_hidden_states += (
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_20_indices].mean(
+                        axis=1
+                    ),
+                )
+
+            elif emb_type == "eq-4":
+                temp_hidden_states = (
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
+                ).flatten(start_dim=1)
+                all_hidden_states += (
+                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                )
+
+            elif emb_type == "max":
+                temp_hidden_states = torch.clamp(hidden_states.max(axis=1)[0], min=0)
+                all_hidden_states += (
+                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
                 )
 
         for idx, decoder_layer in enumerate(self.layers[: self.config.num_hidden_layers]):
@@ -157,6 +203,30 @@ class CustomLlamaModel(LlamaModel):
                         (hidden_states * attention_mask.unsqueeze(2)).sum(axis=1)
                         / attention_mask.sum(axis=1).unsqueeze(1),
                     )
+                elif emb_type == "last-10":
+                    all_hidden_states += (
+                        hidden_states[torch.arange(batch_size).unsqueeze(1), last_10_indices].mean(
+                            axis=1
+                        ),
+                    )
+                elif emb_type == "last-20":
+                    all_hidden_states += (
+                        hidden_states[torch.arange(batch_size).unsqueeze(1), last_20_indices].mean(
+                            axis=1
+                        ),
+                    )
+                elif emb_type == "eq-4":
+                    temp_hidden_states = (
+                        hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
+                    ).flatten(start_dim=1)
+                    all_hidden_states += (
+                        temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                    )
+                elif emb_type == "max":
+                    temp_hidden_states = torch.clamp(hidden_states.max(axis=1)[0], min=0)
+                    all_hidden_states += (
+                        temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                    )
 
                 if output_attentions:
                     all_self_attns += (layer_outputs[1],)
@@ -177,6 +247,30 @@ class CustomLlamaModel(LlamaModel):
                 all_hidden_states += (
                     (hidden_states * attention_mask.unsqueeze(2)).sum(axis=1)
                     / attention_mask.sum(axis=1).unsqueeze(1),
+                )
+            elif emb_type == "last-10":
+                all_hidden_states += (
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_10_indices].mean(
+                        axis=1
+                    ),
+                )
+            elif emb_type == "last-20":
+                all_hidden_states += (
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_20_indices].mean(
+                        axis=1
+                    ),
+                )
+            elif emb_type == "eq-4":
+                temp_hidden_states = (
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
+                ).flatten(start_dim=1)
+                all_hidden_states += (
+                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                )
+            elif emb_type == "max":
+                temp_hidden_states = torch.clamp(hidden_states.max(axis=1)[0], min=0)
+                all_hidden_states += (
+                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
                 )
 
         return (all_hidden_states, all_self_attns)
@@ -200,7 +294,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
         output_hidden_states: Optional[bool] = None,
         cache_position: Optional[torch.LongTensor] = None,
         target_layer: Optional[list] = None,
-        decay: Optional[float] = 0.99,
+        decay: Optional[float] = 0.5,
         emb_type: Optional[str] = "mean",
         logits_to_keep: Union[int, torch.Tensor] = 0,
         **kwargs: Unpack[KwargsForCausalLM],
