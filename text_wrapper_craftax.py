@@ -196,9 +196,9 @@ def symbolic_to_text_numpy(symbolic_array):
     meta_prompt = "You are an intelligent agent exploring the world of Craftax — a procedurally generated, crafter-like, open-ended survival game. "
     meta_prompt += "It is a 2D tile-based environment with nearby tiles visible to you. The world has multiple floors, creatures, items, and hidden dangers. "
     meta_prompt += "Each floor may contain valuable resources and dangerous enemies. "
-    meta_prompt += "Your goal is to survive, gather resources, and explore. You should also complete achievements (eg. sleeping) to get rewards. "
+    meta_prompt += "Your goal is to survive, gather resources, and explore. You should also complete achievements (eg. sleep) to get rewards. "
     meta_prompt += "You will receive an observation describing your current view divided between various sections such as blocks (grass, sand, etc), items (torch, ladder), "
-    meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, drink; very important to maintain eg. by sleeping for the agent to stay alive), "
+    meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, drink; very important to maintain good levels for the agent to stay alive), "
     meta_prompt += "equipment (swords, helmets, armour), and special values. "
     meta_prompt += "Your task is to interpret this observation and provide a detailed description of your surroundings. "
     text_description.append(meta_prompt)
@@ -309,7 +309,7 @@ def symbolic_to_text_numpy(symbolic_array):
     for intrinsic_idx in range(len(Intrinsic_Items)):
         intrinsic_value = intrinsic_array[intrinsic_idx]
         text_description.append(
-            Intrinsic_Items[intrinsic_idx] + ": " + str(intrinsic_value * 10)
+            Intrinsic_Items[intrinsic_idx] + ": " + str(intrinsic_value * 10) + "/10"
         )
 
     direction_array = symbolic_array[8248:8252]
@@ -366,15 +366,40 @@ def symbolic_to_text_numpy(symbolic_array):
             "Boots Enchantment: " + boots_enchantment_dict[boots_enchantment]
         )
 
-    text_description.append("Special values: ")
     text_description.append(
         "Light Level (Day/Night Cycle): " + str(symbolic_array[8260])
     )
-    special_values = symbolic_array[8261:8268]
-    for special_idx in range(len(special_values)):
-        special_value = special_values[special_idx]
-        text_description.append(
-            special_values_dict[special_idx] + ": " + str(bool(special_value))
-        )
+
+    if symbolic_array[8261] == 1:
+        text_description.append("The agent is sleeping.")
+    else:
+        text_description.append("The agent is not sleeping.")
+
+    if symbolic_array[8262] == 1:
+        text_description.append("The agent is resting.")
+    else:
+        text_description.append("The agent is not resting.")
+
+    if symbolic_array[8263] == 1:
+        text_description.append("Learned Fireball.")
+    else:
+        text_description.append("Did not learn Fireball.")
+
+    if symbolic_array[8264] == 1:
+        text_description.append("Learned Iceball.")
+    else:
+        text_description.append("Did not learn Iceball.")
+
+    text_description.append("Current Floor: " + str(symbolic_array[8265]))
+
+    if symbolic_array[8266] == 1:
+        text_description.append("Current Floor Down Ladder Open.")
+    else:
+        text_description.append("Current Floor Down Ladder Blocked.")
+
+    if symbolic_array[8267] == 1:
+        text_description.append("Boss is vulnerable.")
+    else:
+        text_description.append("Boss is not vulnerable.")
 
     return text_description
