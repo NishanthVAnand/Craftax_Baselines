@@ -26,6 +26,7 @@ from models.actor_critic import (
     ActorCriticConv,
     ActorCriticLinear,
     ActorCriticOneLayer,
+    ActorCriticTwoLayer,
 )
 
 from models.icm import ICMEncoder, ICMForward, ICMInverse
@@ -90,8 +91,12 @@ def make_train(config):
         if "Symbolic" in config["ENV_NAME"]:
             if config["NETWORK_TYPE"] == "ActorCriticLinear":
                 network = ActorCriticLinear(env.action_space(env_params).n)
-            else:
+            elif config["NETWORK_TYPE"] == "ActorCriticOneLayer":
                 network = ActorCriticOneLayer(
+                    env.action_space(env_params).n, config["LAYER_SIZE"]
+                )
+            else:
+                network = ActorCriticTwoLayer(
                     env.action_space(env_params).n, config["LAYER_SIZE"]
                 )
         else:
