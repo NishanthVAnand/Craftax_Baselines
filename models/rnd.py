@@ -88,9 +88,7 @@ class ActorCriticRND(nn.Module):
         )(critic_e)
         critic_e = activation(critic_e)
 
-        critic_e = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
-            critic_e
-        )
+        critic_e = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(critic_e)
 
         # Intrinsic reward
         critic_i = nn.Dense(
@@ -114,8 +112,6 @@ class ActorCriticRND(nn.Module):
         )(critic_i)
         critic_i = activation(critic_i)
 
-        critic_i = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
-            critic_i
-        )
+        critic_i = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(critic_i)
 
         return pi, jnp.squeeze(critic_e, axis=-1), jnp.squeeze(critic_i, axis=-1)

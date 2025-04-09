@@ -57,9 +57,7 @@ def main(args):
         )
         from craftax.craftax_classic.constants import Action
 
-        env = CraftaxClassicSymbolicEnv(
-            CraftaxClassicSymbolicEnv.default_static_params()
-        )
+        env = CraftaxClassicSymbolicEnv(CraftaxClassicSymbolicEnv.default_static_params())
         network = ActorCritic(len(Action), config["LAYER_SIZE"])
         is_classic = True
     elif config["ENV_NAME"] == "Craftax-Classic-Pixels-v1":
@@ -93,9 +91,7 @@ def main(args):
         tx=tx,
     )
 
-    train_state = checkpoint_manager.restore(
-        config["TOTAL_TIMESTEPS"], items=train_state
-    )
+    train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"], items=train_state)
 
     obs, env_state = env.reset(key=__rng)
     done = 0
@@ -121,9 +117,7 @@ def main(args):
         if action is not None:
             rng, _rng = jax.random.split(rng)
             old_achievements = env_state.achievements
-            obs, env_state, reward, done, info = env.step(
-                _rng, env_state, action, env_params
-            )
+            obs, env_state, reward, done, info = env.step(_rng, env_state, action, env_params)
             new_achievements = env_state.achievements
             print_new_achievements(Achievement, old_achievements, new_achievements)
             if done:

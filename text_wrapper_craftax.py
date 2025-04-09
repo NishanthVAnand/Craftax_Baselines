@@ -163,18 +163,10 @@ def generate_distance_dict(max_range=5):
                 continue  # Skip (0,0) since it means no movement
 
             # Vertical description
-            vert_text = (
-                f"{abs(v)} steps north"
-                if v < 0
-                else (f"{v} steps south" if v > 0 else "")
-            )
+            vert_text = f"{abs(v)} steps north" if v < 0 else (f"{v} steps south" if v > 0 else "")
 
             # Horizontal description
-            hor_text = (
-                f"{abs(h)} steps west"
-                if h < 0
-                else (f"{h} steps east" if h > 0 else "")
-            )
+            hor_text = f"{abs(h)} steps west" if h < 0 else (f"{h} steps east" if h > 0 else "")
 
             # Combine descriptions
             if vert_text and hor_text:
@@ -206,9 +198,7 @@ def symbolic_to_text_numpy(symbolic_array):
 
     rows = np.arange(OBS_DIM[0])[:, None]
     cols = np.arange(OBS_DIM[1])[None, :]
-    distance_matrix = np.abs(rows - (OBS_DIM[0] - 1) // 2) + np.abs(
-        cols - (OBS_DIM[1] - 1) // 2
-    )
+    distance_matrix = np.abs(rows - (OBS_DIM[0] - 1) // 2) + np.abs(cols - (OBS_DIM[1] - 1) // 2)
     max_distance = 100  # max distance to get rid of zeros
 
     symbolic_array_map = symbolic_array[:8217]
@@ -227,19 +217,11 @@ def symbolic_to_text_numpy(symbolic_array):
             curr_blocks = distance_matrix * curr_block_mask
             curr_blocks_max_dist = np.where(curr_block_mask, curr_blocks, max_distance)
             min_distance_curr_block = np.min(curr_blocks_max_dist)
-            min_dist_indices = np.argwhere(
-                curr_blocks_max_dist == min_distance_curr_block
-            )
-            relative_pos = min_dist_indices - np.array(
-                [OBS_DIM[0] // 2, OBS_DIM[1] // 2]
-            )
+            min_dist_indices = np.argwhere(curr_blocks_max_dist == min_distance_curr_block)
+            relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
             distance_tuples = [tuple(map(int, d)) for d in relative_pos]
-            descriptions = [
-                distance_lookup.get(d, "Unknown movement") for d in distance_tuples
-            ]
-            text_description.append(
-                Block_id_to_text[block] + " is at: " + ", ".join(descriptions)
-            )
+            descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
+            text_description.append(Block_id_to_text[block] + " is at: " + ", ".join(descriptions))
 
     # Item types description
     symbolic_array_map_item = symbolic_array_map_reshaped[:, :, 37:42]
@@ -254,19 +236,11 @@ def symbolic_to_text_numpy(symbolic_array):
             curr_items = distance_matrix * curr_item_mask
             curr_items_max_dist = np.where(curr_item_mask, curr_items, max_distance)
             min_distance_curr_item = np.min(curr_items_max_dist)
-            min_dist_indices = np.argwhere(
-                curr_items_max_dist == min_distance_curr_item
-            )
-            relative_pos = min_dist_indices - np.array(
-                [OBS_DIM[0] // 2, OBS_DIM[1] // 2]
-            )
+            min_dist_indices = np.argwhere(curr_items_max_dist == min_distance_curr_item)
+            relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
             distance_tuples = [tuple(map(int, d)) for d in relative_pos]
-            descriptions = [
-                distance_lookup.get(d, "Unknown movement") for d in distance_tuples
-            ]
-            text_description.append(
-                item_type_to_text[item] + " is at: " + ", ".join(descriptions)
-            )
+            descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
+            text_description.append(item_type_to_text[item] + " is at: " + ", ".join(descriptions))
 
     # Mob types description
     symbolic_array_map_mobs = symbolic_array_map_reshaped[:, :, 42:82]
@@ -281,16 +255,10 @@ def symbolic_to_text_numpy(symbolic_array):
             curr_mobs_max_dist = np.where(curr_mob_mask, curr_mobs, max_distance)
             min_distance_curr_mob = np.min(curr_mobs_max_dist)
             min_dist_indices = np.argwhere(curr_mobs_max_dist == min_distance_curr_mob)
-            relative_pos = min_dist_indices - np.array(
-                [OBS_DIM[0] // 2, OBS_DIM[1] // 2]
-            )
+            relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
             distance_tuples = [tuple(map(int, d)) for d in relative_pos]
-            descriptions = [
-                distance_lookup.get(d, "Unknown movement") for d in distance_tuples
-            ]
-            text_description.append(
-                mob_id_to_text[mob] + " is at: " + ", ".join(descriptions)
-            )
+            descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
+            text_description.append(mob_id_to_text[mob] + " is at: " + ", ".join(descriptions))
 
     inventory_array = np.argwhere(symbolic_array[8217:8233] > 0).flatten()
     if inventory_array.size > 0:
@@ -298,10 +266,7 @@ def symbolic_to_text_numpy(symbolic_array):
         for inv_idx in inventory_array:
             item_count = symbolic_array[8217:8233][inv_idx]
             text_description.append(
-                "The agent has "
-                + str(item_count)
-                + " units of "
-                + Inventory_Items[inv_idx]
+                "The agent has " + str(item_count) + " units of " + Inventory_Items[inv_idx]
             )
 
     potions_array = np.argwhere(symbolic_array[8233:8239] > 0).flatten()
@@ -310,10 +275,7 @@ def symbolic_to_text_numpy(symbolic_array):
         for potion_idx in potions_array:
             potion_count = symbolic_array[8233:8239][potion_idx]
             text_description.append(
-                "The agent has "
-                + str(potion_count)
-                + " units of "
-                + Potion_Items[potion_idx]
+                "The agent has " + str(potion_count) + " units of " + Potion_Items[potion_idx]
             )
 
     intrinsic_array = symbolic_array[8239:8248]
@@ -343,15 +305,11 @@ def symbolic_to_text_numpy(symbolic_array):
 
     chestplate_level = symbolic_array[8253]
     if chestplate_level != 0:
-        text_description.append(
-            "Chestplate Level: " + chestplate_level_dict[chestplate_level]
-        )
+        text_description.append("Chestplate Level: " + chestplate_level_dict[chestplate_level])
 
     leggings_level = symbolic_array[8254]
     if leggings_level != 0:
-        text_description.append(
-            "Leggings Level: " + leggings_level_dict[leggings_level]
-        )
+        text_description.append("Leggings Level: " + leggings_level_dict[leggings_level])
 
     boots_level = symbolic_array[8255]
     if boots_level != 0:
@@ -366,8 +324,7 @@ def symbolic_to_text_numpy(symbolic_array):
     chestplate_enchantment = symbolic_array[8257]
     if chestplate_enchantment != 0:
         text_description.append(
-            "Chestplate Enchantment: "
-            + chestplate_enchantment_dict[chestplate_enchantment]
+            "Chestplate Enchantment: " + chestplate_enchantment_dict[chestplate_enchantment]
         )
 
     leggings_enchantment = symbolic_array[8258]
@@ -378,13 +335,9 @@ def symbolic_to_text_numpy(symbolic_array):
 
     boots_enchantment = symbolic_array[8259]
     if boots_enchantment != 0:
-        text_description.append(
-            "Boots Enchantment: " + boots_enchantment_dict[boots_enchantment]
-        )
+        text_description.append("Boots Enchantment: " + boots_enchantment_dict[boots_enchantment])
 
-    text_description.append(
-        "The light level is " + str(np.around(symbolic_array[8260], 2))
-    )
+    text_description.append("The light level is " + str(np.around(symbolic_array[8260], 2)))
 
     if symbolic_array[8261] == 1:
         text_description.append("The agent is sleeping.")

@@ -35,9 +35,7 @@ for llm_pretrained in llm_pretrained_all:
     padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
 
     with torch.no_grad():
-        llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(
-            embedding_dim
-        )
+        llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(embedding_dim)
 
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 

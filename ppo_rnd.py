@@ -48,16 +48,10 @@ class Transition(NamedTuple):
 
 
 def make_train(config):
-    config["NUM_UPDATES"] = (
-        config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
-    )
-    config["MINIBATCH_SIZE"] = (
-        config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
-    )
+    config["NUM_UPDATES"] = config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
+    config["MINIBATCH_SIZE"] = config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
 
-    env = make_craftax_env_from_name(
-        config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"]
-    )
+    env = make_craftax_env_from_name(config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"])
     env_params = env.default_params
 
     env = LogWrapper(env)
@@ -82,9 +76,7 @@ def make_train(config):
     def train(rng):
         # INIT NETWORK
         if "Symbolic" in config["ENV_NAME"]:
-            network = ActorCriticRND(
-                env.action_space(env_params).n, config["LAYER_SIZE"]
-            )
+            network = ActorCriticRND(env.action_space(env_params).n, config["LAYER_SIZE"])
         else:
             raise ValueError
             # network = ActorCriticConv(
@@ -127,9 +119,7 @@ def make_train(config):
                 layer_size=config["RND_LAYER_SIZE"],
             )
             rng, _rng = jax.random.split(rng)
-            rnd_random_network_params = rnd_random_network.init(
-                _rng, jnp.zeros((1, obs_shape))
-            )
+            rnd_random_network_params = rnd_random_network.init(_rng, jnp.zeros((1, obs_shape)))
 
             # Distillation Network
             rnd_distillation_network = RNDNetwork(
@@ -183,9 +173,7 @@ def make_train(config):
                 reward_i = jnp.zeros(config["NUM_ENVS"])
 
                 if config["USE_RND"]:
-                    random_pred = rnd_random_network.apply(
-                        rnd_random_network_params, obsv
-                    )
+                    random_pred = rnd_random_network.apply(rnd_random_network_params, obsv)
 
                     distill_pred = ex_state["rnd_distillation_network"].apply_fn(
                         ex_state["rnd_distillation_network"].params, obsv
@@ -240,22 +228,15 @@ def make_train(config):
                     gae, next_value, is_extrinsic = gae_and_next_value
                     done, value, reward = (
                         transition.done,
-                        jax.lax.select(
-                            is_extrinsic, transition.value_e, transition.value_i
-                        ),
-                        jax.lax.select(
-                            is_extrinsic, transition.reward_e, transition.reward_i
-                        ),
+                        jax.lax.select(is_extrinsic, transition.value_e, transition.value_i),
+                        jax.lax.select(is_extrinsic, transition.reward_e, transition.reward_i),
                     )
                     done = jnp.logical_and(
                         done, jnp.logical_or(config["RND_IS_EPISODIC"], is_extrinsic)
                     )
 
                     delta = reward + config["GAMMA"] * next_value * (1 - done) - value
-                    gae = (
-                        delta
-                        + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - done) * gae
-                    )
+                    gae = delta + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - done) * gae
                     return (gae, value, is_extrinsic), gae
 
                 _, advantages = jax.lax.scan(
@@ -284,9 +265,7 @@ def make_train(config):
                     ) = batch_info
 
                     # Policy/value network
-                    def _loss_fn(
-                        params, traj_batch, gae_e, targets_e, gae_i, targets_i
-                    ):
+                    def _loss_fn(params, traj_batch, gae_e, targets_e, gae_i, targets_i):
                         # RERUN NETWORK
                         pi, value_e, value_i = network.apply(params, traj_batch.obs)
                         log_prob = pi.log_prob(traj_batch.action)
@@ -296,12 +275,9 @@ def make_train(config):
                             value_e - traj_batch.value_e
                         ).clip(-config["CLIP_EPS"], config["CLIP_EPS"])
                         value_losses_e = jnp.square(value_e - targets_e)
-                        value_losses_clipped_e = jnp.square(
-                            value_pred_clipped_e - targets_e
-                        )
+                        value_losses_clipped_e = jnp.square(value_pred_clipped_e - targets_e)
                         value_loss_e = (
-                            0.5
-                            * jnp.maximum(value_losses_e, value_losses_clipped_e).mean()
+                            0.5 * jnp.maximum(value_losses_e, value_losses_clipped_e).mean()
                         )
 
                         # CALCULATE INTRINSIC VALUE LOSS
@@ -309,12 +285,9 @@ def make_train(config):
                             value_i - traj_batch.value_i
                         ).clip(-config["CLIP_EPS"], config["CLIP_EPS"])
                         value_losses_i = jnp.square(value_i - targets_i)
-                        value_losses_clipped_i = jnp.square(
-                            value_pred_clipped_i - targets_i
-                        )
+                        value_losses_clipped_i = jnp.square(value_pred_clipped_i - targets_i)
                         value_loss_i = (
-                            0.5
-                            * jnp.maximum(value_losses_i, value_losses_clipped_i).mean()
+                            0.5 * jnp.maximum(value_losses_i, value_losses_clipped_i).mean()
                         )
 
                         # CALCULATE ACTOR LOSS
@@ -388,21 +361,13 @@ def make_train(config):
                     advantages_i,
                     targets_i,
                 )
-                batch = jax.tree.map(
-                    lambda x: x.reshape((batch_size,) + x.shape[2:]), batch
-                )
-                shuffled_batch = jax.tree.map(
-                    lambda x: jnp.take(x, permutation, axis=0), batch
-                )
+                batch = jax.tree.map(lambda x: x.reshape((batch_size,) + x.shape[2:]), batch)
+                shuffled_batch = jax.tree.map(lambda x: jnp.take(x, permutation, axis=0), batch)
                 minibatches = jax.tree.map(
-                    lambda x: jnp.reshape(
-                        x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])
-                    ),
+                    lambda x: jnp.reshape(x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])),
                     shuffled_batch,
                 )
-                train_state, losses = jax.lax.scan(
-                    _update_minbatch, train_state, minibatches
-                )
+                train_state, losses = jax.lax.scan(_update_minbatch, train_state, minibatches)
                 update_state = (
                     train_state,
                     traj_batch,
@@ -475,21 +440,13 @@ def make_train(config):
                     batch_size == config["NUM_STEPS"] * config["NUM_ENVS"]
                 ), "batch size must be equal to number of steps * number of envs"
                 permutation = jax.random.permutation(_rng, batch_size)
-                batch = jax.tree.map(
-                    lambda x: x.reshape((batch_size,) + x.shape[2:]), traj_batch
-                )
-                shuffled_batch = jax.tree.map(
-                    lambda x: jnp.take(x, permutation, axis=0), batch
-                )
+                batch = jax.tree.map(lambda x: x.reshape((batch_size,) + x.shape[2:]), traj_batch)
+                shuffled_batch = jax.tree.map(lambda x: jnp.take(x, permutation, axis=0), batch)
                 minibatches = jax.tree.map(
-                    lambda x: jnp.reshape(
-                        x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])
-                    ),
+                    lambda x: jnp.reshape(x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])),
                     shuffled_batch,
                 )
-                ex_state, losses = jax.lax.scan(
-                    _update_ex_minbatch, ex_state, minibatches
-                )
+                ex_state, losses = jax.lax.scan(_update_ex_minbatch, ex_state, minibatches)
                 update_state = (ex_state, traj_batch, rng)
                 return update_state, losses
 
@@ -543,9 +500,7 @@ def make_train(config):
             _rng,
             0,
         )
-        runner_state, metric = jax.lax.scan(
-            _update_step, runner_state, None, config["NUM_UPDATES"]
-        )
+        runner_state, metric = jax.lax.scan(_update_step, runner_state, None, config["NUM_UPDATES"])
         return {"runner_state": runner_state}  # , "info": metric}
 
     return train
@@ -636,15 +591,11 @@ if __name__ == "__main__":
     parser.add_argument("--vf_coef", type=float, default=0.5)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--activation", type=str, default="tanh")
-    parser.add_argument(
-        "--anneal_lr", action=argparse.BooleanOptionalAction, default=True
-    )
+    parser.add_argument("--anneal_lr", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--debug", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--jit", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--seed", type=int)
-    parser.add_argument(
-        "--use_wandb", action=argparse.BooleanOptionalAction, default=True
-    )
+    parser.add_argument("--use_wandb", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--save_policy", action="store_true")
     parser.add_argument("--num_repeats", type=int, default=1)
     parser.add_argument("--layer_size", type=int, default=512)
@@ -658,18 +609,14 @@ if __name__ == "__main__":
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=1)
     # RND
-    parser.add_argument(
-        "--use_rnd", action=argparse.BooleanOptionalAction, default=True
-    )
+    parser.add_argument("--use_rnd", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--rnd_layer_size", type=int, default=256)
     parser.add_argument("--rnd_output_size", type=int, default=512)
     parser.add_argument("--rnd_lr", type=float, default=3e-4)
     parser.add_argument("--rnd_reward_coeff", type=float, default=1.0)
     parser.add_argument("--rnd_loss_coeff", type=float, default=0.01)
     parser.add_argument("--rnd_gae_coeff", type=float, default=0.01)
-    parser.add_argument(
-        "--rnd_is_episodic", action=argparse.BooleanOptionalAction, default=False
-    )
+    parser.add_argument("--rnd_is_episodic", action=argparse.BooleanOptionalAction, default=False)
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     if rest_args:

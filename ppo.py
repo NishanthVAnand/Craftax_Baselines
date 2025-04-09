@@ -51,16 +51,10 @@ class Transition(NamedTuple):
 
 
 def make_train(config):
-    config["NUM_UPDATES"] = (
-        config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
-    )
-    config["MINIBATCH_SIZE"] = (
-        config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
-    )
+    config["NUM_UPDATES"] = config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
+    config["MINIBATCH_SIZE"] = config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
 
-    env = make_craftax_env_from_name(
-        config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"]
-    )
+    env = make_craftax_env_from_name(config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"])
     env_params = env.default_params
 
     env = LogWrapper(env)
@@ -87,9 +81,7 @@ def make_train(config):
         if "Symbolic" in config["ENV_NAME"]:
             network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
         else:
-            network = ActorCriticConv(
-                env.action_space(env_params).n, config["LAYER_SIZE"]
-            )
+            network = ActorCriticConv(env.action_space(env_params).n, config["LAYER_SIZE"])
 
         rng, _rng = jax.random.split(rng)
         init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
@@ -130,9 +122,7 @@ def make_train(config):
                 layer_size=config["ICM_LAYER_SIZE"],
             )
             rng, _rng = jax.random.split(rng)
-            icm_encoder_network_params = icm_encoder_network.init(
-                _rng, jnp.zeros((1, obs_shape))
-            )
+            icm_encoder_network_params = icm_encoder_network.init(_rng, jnp.zeros((1, obs_shape)))
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
                 optax.adam(config["ICM_LR"], eps=1e-5),
@@ -189,9 +179,7 @@ def make_train(config):
             if config["USE_E3B"]:
                 ex_state["e3b_matrix"] = (
                     jnp.repeat(
-                        jnp.expand_dims(
-                            jnp.identity(config["ICM_LATENT_SIZE"]), axis=0
-                        ),
+                        jnp.expand_dims(jnp.identity(config["ICM_LATENT_SIZE"]), axis=0),
                         config["NUM_ENVS"],
                         axis=0,
                     )
@@ -240,9 +228,7 @@ def make_train(config):
                     latent_next_obs_pred = ex_state["icm_forward"].apply_fn(
                         ex_state["icm_forward"].params, latent_obs, action
                     )
-                    error = (latent_next_obs - latent_next_obs_pred) * (
-                        1 - done[:, None]
-                    )
+                    error = (latent_next_obs - latent_next_obs_pred) * (1 - done[:, None])
                     mse = jnp.square(error).mean(axis=-1)
 
                     reward_i = mse * config["ICM_REWARD_COEFF"]
@@ -259,21 +245,15 @@ def make_train(config):
                         updated_cs = jax.vmap(update_c)(ex_state["e3b_matrix"], bs, us)
                         new_cs = (
                             jnp.repeat(
-                                jnp.expand_dims(
-                                    jnp.identity(config["ICM_LATENT_SIZE"]), axis=0
-                                ),
+                                jnp.expand_dims(jnp.identity(config["ICM_LATENT_SIZE"]), axis=0),
                                 config["NUM_ENVS"],
                                 axis=0,
                             )
                             / config["E3B_LAMBDA"]
                         )
-                        ex_state["e3b_matrix"] = jnp.where(
-                            done[:, None, None], new_cs, updated_cs
-                        )
+                        ex_state["e3b_matrix"] = jnp.where(done[:, None, None], new_cs, updated_cs)
 
-                        e3b_bonus = jnp.where(
-                            done, jnp.zeros((config["NUM_ENVS"],)), bs
-                        )
+                        e3b_bonus = jnp.where(done, jnp.zeros((config["NUM_ENVS"],)), bs)
 
                         reward_i = e3b_bonus * config["E3B_REWARD_COEFF"]
 
@@ -325,10 +305,7 @@ def make_train(config):
                         transition.reward,
                     )
                     delta = reward + config["GAMMA"] * next_value * (1 - done) - value
-                    gae = (
-                        delta
-                        + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - done) * gae
-                    )
+                    gae = delta + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - done) * gae
                     return (gae, value), gae
 
                 _, advantages = jax.lax.scan(
@@ -354,14 +331,12 @@ def make_train(config):
                         log_prob = pi.log_prob(traj_batch.action)
 
                         # CALCULATE VALUE LOSS
-                        value_pred_clipped = traj_batch.value + (
-                            value - traj_batch.value
-                        ).clip(-config["CLIP_EPS"], config["CLIP_EPS"])
+                        value_pred_clipped = traj_batch.value + (value - traj_batch.value).clip(
+                            -config["CLIP_EPS"], config["CLIP_EPS"]
+                        )
                         value_losses = jnp.square(value - targets)
                         value_losses_clipped = jnp.square(value_pred_clipped - targets)
-                        value_loss = (
-                            0.5 * jnp.maximum(value_losses, value_losses_clipped).mean()
-                        )
+                        value_loss = 0.5 * jnp.maximum(value_losses, value_losses_clipped).mean()
 
                         # CALCULATE ACTOR LOSS
                         ratio = jnp.exp(log_prob - traj_batch.log_prob)
@@ -387,9 +362,7 @@ def make_train(config):
                         return total_loss, (value_loss, loss_actor, entropy)
 
                     grad_fn = jax.value_and_grad(_loss_fn, has_aux=True)
-                    total_loss, grads = grad_fn(
-                        train_state.params, traj_batch, advantages, targets
-                    )
+                    total_loss, grads = grad_fn(train_state.params, traj_batch, advantages, targets)
                     train_state = train_state.apply_gradients(grads=grads)
 
                     losses = (total_loss, 0)
@@ -409,21 +382,13 @@ def make_train(config):
                 ), "batch size must be equal to number of steps * number of envs"
                 permutation = jax.random.permutation(_rng, batch_size)
                 batch = (traj_batch, advantages, targets)
-                batch = jax.tree.map(
-                    lambda x: x.reshape((batch_size,) + x.shape[2:]), batch
-                )
-                shuffled_batch = jax.tree.map(
-                    lambda x: jnp.take(x, permutation, axis=0), batch
-                )
+                batch = jax.tree.map(lambda x: x.reshape((batch_size,) + x.shape[2:]), batch)
+                shuffled_batch = jax.tree.map(lambda x: jnp.take(x, permutation, axis=0), batch)
                 minibatches = jax.tree.map(
-                    lambda x: jnp.reshape(
-                        x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])
-                    ),
+                    lambda x: jnp.reshape(x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])),
                     shuffled_batch,
                 )
-                train_state, losses = jax.lax.scan(
-                    _update_minbatch, train_state, minibatches
-                )
+                train_state, losses = jax.lax.scan(_update_minbatch, train_state, minibatches)
                 update_state = (
                     train_state,
                     traj_batch,
@@ -456,9 +421,7 @@ def make_train(config):
             # UPDATE EXPLORATION STATE
             def _update_ex_epoch(update_state, unused):
                 def _update_ex_minbatch(ex_state, traj_batch):
-                    def _inverse_loss_fn(
-                        icm_encoder_params, icm_inverse_params, traj_batch
-                    ):
+                    def _inverse_loss_fn(icm_encoder_params, icm_inverse_params, traj_batch):
                         latent_obs = ex_state["icm_encoder"].apply_fn(
                             icm_encoder_params, traj_batch.obs
                         )
@@ -475,9 +438,7 @@ def make_train(config):
 
                         bce = -jnp.mean(
                             jnp.sum(
-                                action_pred_logits
-                                * true_action
-                                * (1 - traj_batch.done[:, None]),
+                                action_pred_logits * true_action * (1 - traj_batch.done[:, None]),
                                 axis=1,
                             )
                         )
@@ -520,13 +481,9 @@ def make_train(config):
                         error = (latent_next_obs - latent_next_obs_pred) * (
                             1 - traj_batch.done[:, None]
                         )
-                        return (
-                            jnp.square(error).mean() * config["ICM_FORWARD_LOSS_COEF"]
-                        )
+                        return jnp.square(error).mean() * config["ICM_FORWARD_LOSS_COEF"]
 
-                    forward_grad_fn = jax.value_and_grad(
-                        _forward_loss_fn, has_aux=False
-                    )
+                    forward_grad_fn = jax.value_and_grad(_forward_loss_fn, has_aux=False)
                     forward_loss, icm_forward_grad = forward_grad_fn(
                         ex_state["icm_forward"].params, traj_batch
                     )
@@ -544,21 +501,13 @@ def make_train(config):
                     batch_size == config["NUM_STEPS"] * config["NUM_ENVS"]
                 ), "batch size must be equal to number of steps * number of envs"
                 permutation = jax.random.permutation(_rng, batch_size)
-                batch = jax.tree.map(
-                    lambda x: x.reshape((batch_size,) + x.shape[2:]), traj_batch
-                )
-                shuffled_batch = jax.tree.map(
-                    lambda x: jnp.take(x, permutation, axis=0), batch
-                )
+                batch = jax.tree.map(lambda x: x.reshape((batch_size,) + x.shape[2:]), traj_batch)
+                shuffled_batch = jax.tree.map(lambda x: jnp.take(x, permutation, axis=0), batch)
                 minibatches = jax.tree.map(
-                    lambda x: jnp.reshape(
-                        x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])
-                    ),
+                    lambda x: jnp.reshape(x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])),
                     shuffled_batch,
                 )
-                ex_state, losses = jax.lax.scan(
-                    _update_ex_minbatch, ex_state, minibatches
-                )
+                ex_state, losses = jax.lax.scan(_update_ex_minbatch, ex_state, minibatches)
                 update_state = (ex_state, traj_batch, rng)
                 return update_state, losses
 
@@ -610,9 +559,7 @@ def make_train(config):
             _rng,
             0,
         )
-        runner_state, metric = jax.lax.scan(
-            _update_step, runner_state, None, config["NUM_UPDATES"]
-        )
+        runner_state, metric = jax.lax.scan(_update_step, runner_state, None, config["NUM_UPDATES"])
         return {"runner_state": runner_state}  # , "info": metric}
 
     return train
@@ -626,10 +573,7 @@ def run_ppo(config):
             project=config["WANDB_PROJECT"],
             entity=config["WANDB_ENTITY"],
             config=config,
-            name=config["ENV_NAME"]
-            + "-"
-            + str(int(config["TOTAL_TIMESTEPS"] // 1e6))
-            + "M",
+            name=config["ENV_NAME"] + "-" + str(int(config["TOTAL_TIMESTEPS"] // 1e6)) + "M",
         )
 
     rng = jax.random.PRNGKey(config["SEED"])
@@ -687,15 +631,11 @@ if __name__ == "__main__":
     parser.add_argument("--vf_coef", type=float, default=0.5)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--activation", type=str, default="tanh")
-    parser.add_argument(
-        "--anneal_lr", action=argparse.BooleanOptionalAction, default=True
-    )
+    parser.add_argument("--anneal_lr", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--debug", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--jit", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--seed", type=int)
-    parser.add_argument(
-        "--use_wandb", action=argparse.BooleanOptionalAction, default=True
-    )
+    parser.add_argument("--use_wandb", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--save_policy", action="store_true")
     parser.add_argument("--num_repeats", type=int, default=1)
     parser.add_argument("--layer_size", type=int, default=512)

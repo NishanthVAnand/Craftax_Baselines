@@ -42,9 +42,7 @@ class CustomLlamaModel(LlamaModel):
         """
 
         output_attentions = (
-            output_attentions
-            if output_attentions is not None
-            else self.config.output_attentions
+            output_attentions if output_attentions is not None else self.config.output_attentions
         )
         output_hidden_states = (
             output_hidden_states
@@ -54,9 +52,7 @@ class CustomLlamaModel(LlamaModel):
         use_cache = use_cache if use_cache is not None else self.config.use_cache
 
         if (input_ids is None) ^ (inputs_embeds is not None):
-            raise ValueError(
-                "You must specify exactly one of input_ids or inputs_embeds"
-            )
+            raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
 
         if self.gradient_checkpointing and self.training and use_cache:
             logger.warning_once(
@@ -65,9 +61,7 @@ class CustomLlamaModel(LlamaModel):
             use_cache = False
 
         if not isinstance(past_key_values, (type(None), Cache)):
-            raise ValueError(
-                "The `past_key_values` should be either a `Cache` object or `None`."
-            )
+            raise ValueError("The `past_key_values` should be either a `Cache` object or `None`.")
 
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids)
@@ -101,9 +95,7 @@ class CustomLlamaModel(LlamaModel):
         indices = attention_mask.sum(1) - 1
         if emb_type == "exp":
             _, seq_len, _ = hidden_states.shape
-            distance_from_last = indices.unsqueeze(1) - torch.arange(
-                seq_len, device=indices.device
-            )
+            distance_from_last = indices.unsqueeze(1) - torch.arange(seq_len, device=indices.device)
             weights = (decay**distance_from_last) * attention_mask
 
         # create position embeddings to be shared across the decoder layers
@@ -125,9 +117,7 @@ class CustomLlamaModel(LlamaModel):
                     / attention_mask.sum(axis=1).unsqueeze(1),
                 )
 
-        for idx, decoder_layer in enumerate(
-            self.layers[: self.config.num_hidden_layers]
-        ):
+        for idx, decoder_layer in enumerate(self.layers[: self.config.num_hidden_layers]):
 
             if self.gradient_checkpointing and self.training:
                 layer_outputs = self._gradient_checkpointing_func(
@@ -158,12 +148,9 @@ class CustomLlamaModel(LlamaModel):
 
             if output_hidden_states and (idx + 1) in target_layer:
                 if emb_type == "exp":
-                    temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(
-                        axis=1
-                    )
+                    temp_hidden_states = (hidden_states * weights.unsqueeze(-1)).sum(axis=1)
                     all_hidden_states += (
-                        temp_hidden_states
-                        / temp_hidden_states.sum(axis=1, keepdim=True),
+                        temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
                     )
                 elif emb_type == "mean":
                     all_hidden_states += (
@@ -220,9 +207,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
     ) -> Tuple[Tuple, Tuple]:
 
         output_attentions = (
-            output_attentions
-            if output_attentions is not None
-            else self.config.output_attentions
+            output_attentions if output_attentions is not None else self.config.output_attentions
         )
         output_hidden_states = (
             output_hidden_states

@@ -112,9 +112,7 @@ class ActorCriticRNN(nn.Module):
             bias_init=constant(0.0),
         )(critic)
         critic = nn.relu(critic)
-        critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
-            critic
-        )
+        critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(critic)
 
         return hidden, pi, jnp.squeeze(critic, axis=-1)
 
@@ -130,17 +128,11 @@ class Transition(NamedTuple):
 
 
 def make_train(config):
-    config["NUM_UPDATES"] = (
-        config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
-    )
-    config["MINIBATCH_SIZE"] = (
-        config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
-    )
+    config["NUM_UPDATES"] = config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
+    config["MINIBATCH_SIZE"] = config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
 
     # Create environment
-    env = make_craftax_env_from_name(
-        config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"]
-    )
+    env = make_craftax_env_from_name(config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"])
     env_params = env.default_params
 
     # Wrap with some extra logging
@@ -170,14 +162,10 @@ def make_train(config):
         network = ActorCriticRNN(env.action_space(env_params).n, config=config)
         rng, _rng = jax.random.split(rng)
         init_x = (
-            jnp.zeros(
-                (1, config["NUM_ENVS"], *env.observation_space(env_params).shape)
-            ),
+            jnp.zeros((1, config["NUM_ENVS"], *env.observation_space(env_params).shape)),
             jnp.zeros((1, config["NUM_ENVS"])),
         )
-        init_hstate = ScannedRNN.initialize_carry(
-            config["NUM_ENVS"], config["LAYER_SIZE"]
-        )
+        init_hstate = ScannedRNN.initialize_carry(config["NUM_ENVS"], config["LAYER_SIZE"])
         network_params = network.init(_rng, init_hstate, init_x)
         if config["ANNEAL_LR"]:
             tx = optax.chain(
@@ -198,9 +186,7 @@ def make_train(config):
         # INIT ENV
         rng, _rng = jax.random.split(rng)
         obsv, env_state = env.reset(_rng, env_params)
-        init_hstate = ScannedRNN.initialize_carry(
-            config["NUM_ENVS"], config["LAYER_SIZE"]
-        )
+        init_hstate = ScannedRNN.initialize_carry(config["NUM_ENVS"], config["LAYER_SIZE"])
 
         # TRAIN LOOP
         def _update_step(runner_state, unused):
@@ -230,12 +216,8 @@ def make_train(config):
 
                 # STEP ENV
                 rng, _rng = jax.random.split(rng)
-                obsv, env_state, reward, done, info = env.step(
-                    _rng, env_state, action, env_params
-                )
-                transition = Transition(
-                    last_done, action, value, reward, log_prob, last_obs, info
-                )
+                obsv, env_state, reward, done, info = env.step(_rng, env_state, action, env_params)
+                transition = Transition(last_done, action, value, reward, log_prob, last_obs, info)
                 runner_state = (
                     train_state,
                     env_state,
@@ -274,13 +256,8 @@ def make_train(config):
                         transition.value,
                         transition.reward,
                     )
-                    delta = (
-                        reward + config["GAMMA"] * next_value * (1 - next_done) - value
-                    )
-                    gae = (
-                        delta
-                        + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - next_done) * gae
-                    )
+                    delta = reward + config["GAMMA"] * next_value * (1 - next_done) - value
+                    gae = delta + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - next_done) * gae
                     return (gae, value, done), gae
 
                 _, advantages = jax.lax.scan(
@@ -307,14 +284,12 @@ def make_train(config):
                         log_prob = pi.log_prob(traj_batch.action)
 
                         # CALCULATE VALUE LOSS
-                        value_pred_clipped = traj_batch.value + (
-                            value - traj_batch.value
-                        ).clip(-config["CLIP_EPS"], config["CLIP_EPS"])
+                        value_pred_clipped = traj_batch.value + (value - traj_batch.value).clip(
+                            -config["CLIP_EPS"], config["CLIP_EPS"]
+                        )
                         value_losses = jnp.square(value - targets)
                         value_losses_clipped = jnp.square(value_pred_clipped - targets)
-                        value_loss = (
-                            0.5 * jnp.maximum(value_losses, value_losses_clipped).mean()
-                        )
+                        value_loss = 0.5 * jnp.maximum(value_losses, value_losses_clipped).mean()
 
                         # CALCULATE ACTOR LOSS
                         ratio = jnp.exp(log_prob - traj_batch.log_prob)
@@ -359,16 +334,13 @@ def make_train(config):
                 permutation = jax.random.permutation(_rng, config["NUM_ENVS"])
                 batch = (init_hstate, traj_batch, advantages, targets)
 
-                shuffled_batch = jax.tree.map(
-                    lambda x: jnp.take(x, permutation, axis=1), batch
-                )
+                shuffled_batch = jax.tree.map(lambda x: jnp.take(x, permutation, axis=1), batch)
 
                 minibatches = jax.tree.map(
                     lambda x: jnp.swapaxes(
                         jnp.reshape(
                             x,
-                            [x.shape[0], config["NUM_MINIBATCHES"], -1]
-                            + list(x.shape[2:]),
+                            [x.shape[0], config["NUM_MINIBATCHES"], -1] + list(x.shape[2:]),
                         ),
                         1,
                         0,
@@ -376,9 +348,7 @@ def make_train(config):
                     shuffled_batch,
                 )
 
-                train_state, total_loss = jax.lax.scan(
-                    _update_minbatch, train_state, minibatches
-                )
+                train_state, total_loss = jax.lax.scan(_update_minbatch, train_state, minibatches)
                 update_state = (
                     train_state,
                     init_hstate,
@@ -437,9 +407,7 @@ def make_train(config):
             _rng,
             0,
         )
-        runner_state, metric = jax.lax.scan(
-            _update_step, runner_state, None, config["NUM_UPDATES"]
-        )
+        runner_state, metric = jax.lax.scan(_update_step, runner_state, None, config["NUM_UPDATES"])
         return {"runner_state": runner_state, "metric": metric}
 
     return train
@@ -512,18 +480,12 @@ if __name__ == "__main__":
     parser.add_argument("--vf_coef", type=float, default=0.5)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--activation", type=str, default="tanh")
-    parser.add_argument(
-        "--anneal_lr", action=argparse.BooleanOptionalAction, default=True
-    )
+    parser.add_argument("--anneal_lr", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--debug", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--jit", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--seed", type=int, default=np.random.randint(2**31))
-    parser.add_argument(
-        "--use_wandb", action=argparse.BooleanOptionalAction, default=True
-    )
-    parser.add_argument(
-        "--save_policy", action=argparse.BooleanOptionalAction, default=False
-    )
+    parser.add_argument("--use_wandb", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--save_policy", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--num_repeats", type=int, default=1)
     parser.add_argument("--layer_size", type=int, default=512)
     parser.add_argument("--wandb_project", type=str)

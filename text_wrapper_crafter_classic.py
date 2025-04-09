@@ -61,18 +61,10 @@ def generate_distance_dict(max_range=5):
                 continue  # Skip (0,0) since it means no movement
 
             # Vertical description
-            vert_text = (
-                f"{abs(v)} steps north"
-                if v < 0
-                else (f"{v} steps south" if v > 0 else "")
-            )
+            vert_text = f"{abs(v)} steps north" if v < 0 else (f"{v} steps south" if v > 0 else "")
 
             # Horizontal description
-            hor_text = (
-                f"{abs(h)} steps west"
-                if h < 0
-                else (f"{h} steps east" if h > 0 else "")
-            )
+            hor_text = f"{abs(h)} steps west" if h < 0 else (f"{h} steps east" if h > 0 else "")
 
             # Combine descriptions
             if vert_text and hor_text:
@@ -92,21 +84,19 @@ def symbolic_to_text_numpy(symbolic_array):
 
     text_description = []
     meta_prompt = "You are an intelligent agent exploring the world of Crafter — a procedurally generated open-ended survival game. "
-    meta_prompt += (
-        "It is a 2D tile-based environment with nearby tiles visible to you. "
-    )
+    meta_prompt += "It is a 2D tile-based environment with nearby tiles visible to you. "
     meta_prompt += "Your goal is to survive, gather resources, and explore. You should also complete achievements (eg. sleep) to get rewards. "
     meta_prompt += "You will receive an observation describing your current view, which contain various sections such as blocks (grass, sand, etc), items (torch, ladder), "
-    meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, drink; very important to maintain good levels for the agent to stay alive), "
+    meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, food, drink, and energy). "
+    meta_prompt += "Maintaining high levels are important for the agent to stay alive. "
+    meta_prompt += "You will also receive the brightness level of the environment which can be used in deciding when to sleep. "
     meta_prompt += "Your task is to interpret this observation and provide a detailed description of your surroundings. "
     text_description.append(meta_prompt)
     text_description.append("Observation: ")
 
     rows = np.arange(OBS_DIM[0])[:, None]
     cols = np.arange(OBS_DIM[1])[None, :]
-    distance_matrix = np.abs(rows - (OBS_DIM[0] - 1) // 2) + np.abs(
-        cols - (OBS_DIM[1] - 1) // 2
-    )
+    distance_matrix = np.abs(rows - (OBS_DIM[0] - 1) // 2) + np.abs(cols - (OBS_DIM[1] - 1) // 2)
     max_distance = 100  # max distance to get rid of zeros
 
     symbolic_array_map = symbolic_array[:1323]
@@ -125,19 +115,11 @@ def symbolic_to_text_numpy(symbolic_array):
             curr_blocks = distance_matrix * curr_block_mask
             curr_blocks_max_dist = np.where(curr_block_mask, curr_blocks, max_distance)
             min_distance_curr_block = np.min(curr_blocks_max_dist)
-            min_dist_indices = np.argwhere(
-                curr_blocks_max_dist == min_distance_curr_block
-            )
-            relative_pos = min_dist_indices - np.array(
-                [OBS_DIM[0] // 2, OBS_DIM[1] // 2]
-            )
+            min_dist_indices = np.argwhere(curr_blocks_max_dist == min_distance_curr_block)
+            relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
             distance_tuples = [tuple(map(int, d)) for d in relative_pos]
-            descriptions = [
-                distance_lookup.get(d, "Unknown movement") for d in distance_tuples
-            ]
-            text_description.append(
-                Block_id_to_text[block] + " is at: " + ", ".join(descriptions)
-            )
+            descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
+            text_description.append(Block_id_to_text[block] + " is at: " + ", ".join(descriptions))
 
     # Mob types description
     symbolic_array_map_mobs = symbolic_array_map_reshaped[:, :, 17:21]
@@ -152,16 +134,10 @@ def symbolic_to_text_numpy(symbolic_array):
             curr_mobs_max_dist = np.where(curr_mob_mask, curr_mobs, max_distance)
             min_distance_curr_mob = np.min(curr_mobs_max_dist)
             min_dist_indices = np.argwhere(curr_mobs_max_dist == min_distance_curr_mob)
-            relative_pos = min_dist_indices - np.array(
-                [OBS_DIM[0] // 2, OBS_DIM[1] // 2]
-            )
+            relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
             distance_tuples = [tuple(map(int, d)) for d in relative_pos]
-            descriptions = [
-                distance_lookup.get(d, "Unknown movement") for d in distance_tuples
-            ]
-            text_description.append(
-                mob_id_to_text[mob] + " is at: " + ", ".join(descriptions)
-            )
+            descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
+            text_description.append(mob_id_to_text[mob] + " is at: " + ", ".join(descriptions))
 
     inventory_array = np.argwhere(symbolic_array[1323:1335] > 0).flatten()
     if inventory_array.size > 0:
@@ -169,10 +145,7 @@ def symbolic_to_text_numpy(symbolic_array):
         for inv_idx in inventory_array:
             item_count = symbolic_array[1323:1335][inv_idx]
             text_description.append(
-                "The agent has "
-                + str(item_count)
-                + " units of "
-                + Inventory_Items[inv_idx]
+                "The agent has " + str(item_count) + " units of " + Inventory_Items[inv_idx]
             )
 
     intrinsic_array = symbolic_array[1335:1339]
@@ -192,9 +165,7 @@ def symbolic_to_text_numpy(symbolic_array):
         "The agent is facing " + Direction[np.argwhere(direction_array == 1).item()]
     )
 
-    text_description.append(
-        "The light level is " + str(np.around(symbolic_array[1343], 2))
-    )
+    text_description.append("The light level is " + str(np.around(symbolic_array[1343], 2)))
 
     if symbolic_array[1344] == 1:
         text_description.append("The agent is sleeping.")
