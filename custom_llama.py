@@ -115,7 +115,7 @@ class CustomLlamaModel(LlamaModel):
 
         elif emb_type == "eq-k":
             batch_size, _, _ = hidden_states.shape
-            steps = torch.linspace(0, 1, steps=4, device=indices.device).unsqueeze(0)
+            steps = torch.linspace(0, 1, steps=eq_split, device=indices.device).unsqueeze(0)
             safe_indices = (steps * indices.unsqueeze(1)).long()
 
         # create position embeddings to be shared across the decoder layers

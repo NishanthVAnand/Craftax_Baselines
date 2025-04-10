@@ -64,12 +64,13 @@ def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split):
     return hidden_states[0]
 
 
-def get_llm_obs(obs, config):
+def get_llm_obs(obs, layer, emb_type, decay, eq_split):
     obs = np.array(obs)
-    layer = int(config["LAYER"])
-    emb_type = int(config["EMB_TYPE"])
-    decay = int(config["DECAY"])
-    eq_split = int(config["EQ_SPLIT"])
+    layer = int(layer)
+    emb_type = int(emb_type)
+    decay = float(decay)
+    eq_split = int(eq_split)
+
     text_obs = []
     for curr_obs in obs:
         curr_text_list = symbolic_to_text_numpy(curr_obs)

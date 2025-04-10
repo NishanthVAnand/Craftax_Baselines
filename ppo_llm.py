@@ -126,7 +126,7 @@ def make_train(config):
             # obs_shape = obs_shape[0]
             sample_obs = jnp.zeros(env.observation_space(env_params).shape)
             return_dtype = jax.ShapeDtypeStruct(
-                (config["NUM_ENVS"], emb_dict_map.get(config["EMB_TYPE"], 4096)), jnp.float32
+                (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32
             )  # 4096 is the size of the embedding from llama-8B
             obs_llm = jax.pure_callback(
                 get_llm_obs,
@@ -134,6 +134,8 @@ def make_train(config):
                 sample_obs,
                 config["LAYER"],
                 config["EMB_TYPE"],
+                config["DECAY"],
+                config["EQ_SPLIT"],
             )
             obs_shape = obs_llm.shape[0]
 
@@ -211,15 +213,15 @@ def make_train(config):
         # INIT ENV
         rng, _rng = jax.random.split(rng)
         obsv_old, env_state = env.reset(_rng, env_params)
-        return_dtype = jax.ShapeDtypeStruct(
-            (config["NUM_ENVS"], 4096), jnp.float32
-        )  # 4096 is the size of the embedding from llama-8B
+        return_dtype = jax.ShapeDtypeStruct((config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
         obsv = jax.pure_callback(
             get_llm_obs,
             return_dtype,
             obsv_old,
             config["LAYER"],
             config["EMB_TYPE"],
+            config["DECAY"],
+            config["EQ_SPLIT"],
         )
 
         # TRAIN LOOP
@@ -247,7 +249,7 @@ def make_train(config):
                     _rng, env_state, action, env_params
                 )
                 return_dtype = jax.ShapeDtypeStruct(
-                    (config["NUM_ENVS"], 4096), jnp.float32
+                    (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32
                 )  # 4096 is the size of the embedding from llama-8B
                 obsv = jax.pure_callback(
                     get_llm_obs,
@@ -255,6 +257,8 @@ def make_train(config):
                     obsv_old,
                     config["LAYER"],
                     config["EMB_TYPE"],
+                    config["DECAY"],
+                    config["EQ_SPLIT"],
                 )
 
                 reward_i = jnp.zeros(config["NUM_ENVS"])
@@ -693,6 +697,7 @@ if __name__ == "__main__":
     parser.add_argument("--optimistic_reset_ratio", type=int, default=16)
     parser.add_argument("--network_type", type=str, default="ActorCriticLinear")
     parser.add_argument("--layer", type=int, default=17)
+    parser.add_argument("--decay", type=float, default=0.9)
     parser.add_argument("--emb_type", type=int, default=0, help="0: mean, 1: exp")
     parser.add_argument("--eq_split", type=int, default=16, help="how many equal parts")
 
@@ -716,7 +721,7 @@ if __name__ == "__main__":
         raise ValueError(f"Unknown args {rest_args}")
 
     emb_dict_map = {0: 4096, 1: 4096, 2: 4096, 3: 4096, 4: 4096 * int(args.eq_split), 5: 4096}
-    args["num_params"] = emb_dict_map[int(args.emb_type)]
+    args.num_params = emb_dict_map[int(args.emb_type)]
 
     if args.use_e3b:
         assert args.train_icm
