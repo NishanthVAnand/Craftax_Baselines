@@ -694,7 +694,7 @@ if __name__ == "__main__":
     parser.add_argument("--network_type", type=str, default="ActorCriticLinear")
     parser.add_argument("--layer", type=int, default=17)
     parser.add_argument("--emb_type", type=int, default=0, help="0: mean, 1: exp")
-    parser.add_argument("--eq-split", type=int, default=16, help="how many equal parts")
+    parser.add_argument("--eq_split", type=int, default=16, help="how many equal parts")
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)
