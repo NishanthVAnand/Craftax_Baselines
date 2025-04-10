@@ -89,8 +89,8 @@ def symbolic_to_text_numpy(symbolic_array):
     meta_prompt += "You will receive an observation describing your current view, which contain various sections such as blocks (grass, sand, etc), items (torch, ladder), "
     meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, food, drink, and energy). "
     meta_prompt += "Maintaining high levels are important for the agent to stay alive. "
-    meta_prompt += "You will also receive the brightness level of the environment which can be used in deciding when to sleep. "
-    meta_prompt += "Your task is to interpret this observation and provide a detailed description of your surroundings. "
+    meta_prompt += "You will also receive the brightness level of the environment indicating the time of the day. "
+    meta_prompt += "Your task is to interpret and remember the details of this observation. "
     text_description.append(meta_prompt)
     text_description.append("Observation: ")
 

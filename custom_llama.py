@@ -106,16 +106,22 @@ class CustomLlamaModel(LlamaModel):
                 10, device=indices.device
             ).unsqueeze(0)
 
-        elif emb_type == "last-20":
+        elif emb_type == "last-k":
             batch_size, seq_len, hidden_dim = hidden_states.shape
-            safe_indices = torch.clamp(indices - 20, min=0)
-            last_20_indices = safe_indices.unsqueeze(1) + torch.arange(
-                20, device=indices.device
+            safe_indices = torch.clamp(indices - eq_split, min=0)
+            last_k_indices = safe_indices.unsqueeze(1) + torch.arange(
+                eq_split, device=indices.device
             ).unsqueeze(0)
 
         elif emb_type == "eq-k":
             batch_size, _, _ = hidden_states.shape
             steps = torch.linspace(0, 1, steps=eq_split, device=indices.device).unsqueeze(0)
+            safe_indices = (steps * indices.unsqueeze(1)).long()
+
+        elif emb_type == "geom-k":
+            batch_size, _, _ = hidden_states.shape
+            steps = 1 - decay ** torch.arange(eq_split, device=indices.device).float()
+            steps = (steps / steps.sum()).unsqueeze(0)
             safe_indices = (steps * indices.unsqueeze(1)).long()
 
         # create position embeddings to be shared across the decoder layers
@@ -143,20 +149,23 @@ class CustomLlamaModel(LlamaModel):
                     ),
                 )
 
-            elif emb_type == "last-20":
+            elif emb_type == "last-k":
                 all_hidden_states += (
-                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_20_indices].mean(
-                        axis=1
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_k_indices].flatten(
+                        start_dim=1
                     ),
                 )
 
-            elif emb_type == "eq-k":
+            elif emb_type in ["eq-k", "geom-k"]:
                 temp_hidden_states = (
                     hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
                 ).flatten(start_dim=1)
                 all_hidden_states += (
                     temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
                 )
+                # all_hidden_states += (
+                #     torch.clamp(temp_hidden_states, min=0),
+                # )
 
             elif emb_type == "max":
                 temp_hidden_states = torch.clamp(hidden_states.max(axis=1)[0], min=0)
@@ -210,19 +219,22 @@ class CustomLlamaModel(LlamaModel):
                             axis=1
                         ),
                     )
-                elif emb_type == "last-20":
+                elif emb_type == "last-k":
                     all_hidden_states += (
-                        hidden_states[torch.arange(batch_size).unsqueeze(1), last_20_indices].mean(
-                            axis=1
-                        ),
+                        hidden_states[
+                            torch.arange(batch_size).unsqueeze(1), last_k_indices
+                        ].flatten(start_dim=1),
                     )
-                elif emb_type == "eq-k":
+                elif emb_type in ["eq-k", "geom-k"]:
                     temp_hidden_states = (
                         hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
                     ).flatten(start_dim=1)
                     all_hidden_states += (
                         temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
                     )
+                    # all_hidden_states += (
+                    #     torch.clamp(temp_hidden_states, min=0),
+                    # )
                 elif emb_type == "max":
                     temp_hidden_states = torch.clamp(hidden_states.max(axis=1)[0], min=0)
                     all_hidden_states += (
@@ -255,19 +267,22 @@ class CustomLlamaModel(LlamaModel):
                         axis=1
                     ),
                 )
-            elif emb_type == "last-20":
+            elif emb_type == "last-k":
                 all_hidden_states += (
-                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_20_indices].mean(
-                        axis=1
+                    hidden_states[torch.arange(batch_size).unsqueeze(1), last_k_indices].flatten(
+                        start_dim=1
                     ),
                 )
-            elif emb_type == "eq-k":
+            elif emb_type in ["eq-k", "geom-k"]:
                 temp_hidden_states = (
                     hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
                 ).flatten(start_dim=1)
                 all_hidden_states += (
                     temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
                 )
+                # all_hidden_states += (
+                #     torch.clamp(temp_hidden_states, min=0),
+                # )
             elif emb_type == "max":
                 temp_hidden_states = torch.clamp(hidden_states.max(axis=1)[0], min=0)
                 all_hidden_states += (

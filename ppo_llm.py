@@ -677,8 +677,8 @@ if __name__ == "__main__":
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--gae_lambda", type=float, default=0.8)
     parser.add_argument("--clip_eps", type=float, default=0.2)
-    parser.add_argument("--ent_coef", type=float, default=0.01)
-    parser.add_argument("--vf_coef", type=float, default=0.5)
+    parser.add_argument("--ent_coef", type=float, default=0.001)
+    parser.add_argument("--vf_coef", type=float, default=0.25)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--activation", type=str, default="tanh")
     parser.add_argument("--anneal_lr", action=argparse.BooleanOptionalAction, default=True)
@@ -720,7 +720,15 @@ if __name__ == "__main__":
     if rest_args:
         raise ValueError(f"Unknown args {rest_args}")
 
-    emb_dict_map = {0: 4096, 1: 4096, 2: 4096, 3: 4096, 4: 4096 * int(args.eq_split), 5: 4096}
+    emb_dict_map = {
+        0: 4096,
+        1: 4096,
+        2: 4096,
+        3: 4096 * int(args.eq_split),
+        4: 4096 * int(args.eq_split),
+        5: 4096,
+        6: 4096 * int(args.eq_split),
+    }
     args.num_params = emb_dict_map[int(args.emb_type)]
 
     if args.use_e3b:
