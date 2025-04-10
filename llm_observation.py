@@ -50,10 +50,10 @@ for llm_pretrained in llm_pretrained_all:
 
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
-emb_dict_map = {0: "mean", 1: "exp"}
+emb_dict_map = {0: "mean", 1: "exp", 2: "last-10", 3: "last-20", 4: "eq-k", 5: "max"}
 
 
-def gpu_inference(i, text_obs_chunk, layer, emb_type):
+def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split):
     with torch.no_grad():
         batch_tokens = tokenizer(
             text_obs_chunk,
@@ -69,14 +69,18 @@ def gpu_inference(i, text_obs_chunk, layer, emb_type):
             output_hidden_states=True,
             target_layer=[layer],
             emb_type=emb_dict_map[emb_type],
+            decay=decay,
+            eq_split=eq_split,
         )
     return hidden_states[0]
 
 
-def get_llm_obs(obs, layer, emb_type):
+def get_llm_obs(obs, config):
     obs = np.array(obs)
-    layer = int(layer.item())
-    emb_type = int(emb_type.item())
+    layer = int(config["LAYER"])
+    emb_type = int(config["EMB_TYPE"])
+    decay = int(config["DECAY"])
+    eq_split = int(config["EQ_SPLIT"])
     text_obs = []
     for curr_obs in obs:
         curr_text_list = symbolic_to_text_numpy(curr_obs)
@@ -88,7 +92,7 @@ def get_llm_obs(obs, layer, emb_type):
     embed = []
     with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
         futures = [
-            executor.submit(gpu_inference, i, text_obs_chunks[i], layer, emb_type)
+            executor.submit(gpu_inference, i, text_obs_chunks[i], layer, emb_type, decay, eq_split)
             for i in range(num_gpus - 1)
         ]
         for future in futures:

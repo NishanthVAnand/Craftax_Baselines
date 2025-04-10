@@ -35,6 +35,7 @@ class CustomLlamaModel(LlamaModel):
         target_layer: Optional[list] = None,
         decay: Optional[float] = 0.5,
         emb_type: Optional[str] = "mean",
+        eq_split: Optional[int] = 16,
         **flash_attn_kwargs: Unpack[FlashAttentionKwargs],
     ) -> Tuple[Tuple, Tuple]:
         """
@@ -112,7 +113,7 @@ class CustomLlamaModel(LlamaModel):
                 20, device=indices.device
             ).unsqueeze(0)
 
-        elif emb_type == "eq-4":
+        elif emb_type == "eq-k":
             batch_size, _, _ = hidden_states.shape
             steps = torch.linspace(0, 1, steps=4, device=indices.device).unsqueeze(0)
             safe_indices = (steps * indices.unsqueeze(1)).long()
@@ -149,7 +150,7 @@ class CustomLlamaModel(LlamaModel):
                     ),
                 )
 
-            elif emb_type == "eq-4":
+            elif emb_type == "eq-k":
                 temp_hidden_states = (
                     hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
                 ).flatten(start_dim=1)
@@ -215,7 +216,7 @@ class CustomLlamaModel(LlamaModel):
                             axis=1
                         ),
                     )
-                elif emb_type == "eq-4":
+                elif emb_type == "eq-k":
                     temp_hidden_states = (
                         hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
                     ).flatten(start_dim=1)
@@ -260,7 +261,7 @@ class CustomLlamaModel(LlamaModel):
                         axis=1
                     ),
                 )
-            elif emb_type == "eq-4":
+            elif emb_type == "eq-k":
                 temp_hidden_states = (
                     hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
                 ).flatten(start_dim=1)
@@ -296,6 +297,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
         target_layer: Optional[list] = None,
         decay: Optional[float] = 0.5,
         emb_type: Optional[str] = "mean",
+        eq_split: Optional[int] = 16,
         logits_to_keep: Union[int, torch.Tensor] = 0,
         **kwargs: Unpack[KwargsForCausalLM],
     ) -> Tuple[Tuple, Tuple]:
@@ -322,6 +324,7 @@ class CustomLlamaForCausalLM(LlamaForCausalLM):
             target_layer=target_layer,
             decay=decay,
             emb_type=emb_type,
+            eq_split=eq_split,
             **kwargs,
         )
         hidden_states, all_self_attns = outputs

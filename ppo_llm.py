@@ -94,10 +94,7 @@ def make_train(config):
 
         rng, _rng = jax.random.split(rng)
         # init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
-        emb_dict_map = {0: 4096, 1: 4096, 2: 4096, 3: 4096, 4: 4096 * 4, 5: 4096}
-        init_x = jnp.zeros(
-            (1, emb_dict_map.get(config["EMB_TYPE"], 4096))
-        )  # 4096 is the size of the embedding from llama-8B
+        init_x = jnp.zeros((1, config["NUM_PARAMS"]))
         network_params = network.init(_rng, init_x)
         if config["ANNEAL_LR"]:
             tx = optax.chain(
@@ -697,6 +694,7 @@ if __name__ == "__main__":
     parser.add_argument("--network_type", type=str, default="ActorCriticLinear")
     parser.add_argument("--layer", type=int, default=17)
     parser.add_argument("--emb_type", type=int, default=0, help="0: mean, 1: exp")
+    parser.add_argument("--eq-split", type=int, default=16, help="how many equal parts")
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)
@@ -716,6 +714,9 @@ if __name__ == "__main__":
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     if rest_args:
         raise ValueError(f"Unknown args {rest_args}")
+
+    emb_dict_map = {0: 4096, 1: 4096, 2: 4096, 3: 4096, 4: 4096 * int(args.eq_split), 5: 4096}
+    args["num_params"] = emb_dict_map[int(args.emb_type)]
 
     if args.use_e3b:
         assert args.train_icm
