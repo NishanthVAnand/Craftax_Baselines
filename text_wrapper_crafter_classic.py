@@ -152,12 +152,16 @@ def symbolic_to_text_numpy(symbolic_array):
     text_description.append("Intrinsic values: ")
     for intrinsic_idx in range(len(Intrinsic_Items)):
         intrinsic_value = intrinsic_array[intrinsic_idx]
+        desc = ""
+        if intrinsic_value < 0.5:
+            desc = "The agent's " + Intrinsic_Items[intrinsic_idx] + " is critical!"
         text_description.append(
             "The agent's "
             + Intrinsic_Items[intrinsic_idx]
             + " is "
             + str(np.ceil(intrinsic_value * 10))
-            + "/10"
+            + "/10."
+            + desc
         )
 
     direction_array = symbolic_array[1339:1343]
@@ -165,7 +169,9 @@ def symbolic_to_text_numpy(symbolic_array):
         "The agent is facing " + Direction[np.argwhere(direction_array == 1).item()]
     )
 
-    text_description.append("The light level is " + str(np.around(symbolic_array[1343], 2)))
+    text_description.append(
+        "The light level is " + str(np.around(symbolic_array[1343] * 100, 2)) + "%."
+    )
 
     if symbolic_array[1344] == 1:
         text_description.append("The agent is sleeping.")

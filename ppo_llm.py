@@ -678,8 +678,8 @@ if __name__ == "__main__":
     parser.add_argument("--gae_lambda", type=float, default=0.8)
     parser.add_argument("--clip_eps", type=float, default=0.2)
     parser.add_argument("--ent_coef", type=float, default=0.001)
-    parser.add_argument("--vf_coef", type=float, default=0.25)
-    parser.add_argument("--max_grad_norm", type=float, default=1.0)
+    parser.add_argument("--vf_coef", type=float, default=1.0)
+    parser.add_argument("--max_grad_norm", type=float, default=0.5)
     parser.add_argument("--activation", type=str, default="tanh")
     parser.add_argument("--anneal_lr", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--debug", action=argparse.BooleanOptionalAction, default=True)
@@ -696,7 +696,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--optimistic_reset_ratio", type=int, default=16)
     parser.add_argument("--network_type", type=str, default="ActorCriticLinear")
-    parser.add_argument("--layer", type=int, default=17)
+    parser.add_argument("--layer", type=int, nargs="+", default=17)
     parser.add_argument("--decay", type=float, default=0.9)
     parser.add_argument("--emb_type", type=int, default=0, help="0: mean, 1: exp")
     parser.add_argument("--eq_split", type=int, default=16, help="how many equal parts")
@@ -721,13 +721,13 @@ if __name__ == "__main__":
         raise ValueError(f"Unknown args {rest_args}")
 
     emb_dict_map = {
-        0: 4096,
-        1: 4096,
-        2: 4096,
-        3: 4096 * int(args.eq_split),
-        4: 4096 * int(args.eq_split),
-        5: 4096,
-        6: 4096 * int(args.eq_split),
+        0: 4096 * len(args.layer),
+        1: 4096 * len(args.layer),
+        2: 4096 * len(args.layer),
+        3: 4096 * int(args.eq_split) * len(args.layer),
+        4: 4096 * int(args.eq_split) * len(args.layer),
+        5: 4096 * len(args.layer),
+        6: 4096 * int(args.eq_split) * len(args.layer),
     }
     args.num_params = emb_dict_map[int(args.emb_type)]
 

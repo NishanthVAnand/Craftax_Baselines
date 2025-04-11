@@ -72,7 +72,7 @@ def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split):
             decay=decay,
             eq_split=eq_split,
         )
-    return hidden_states[0]
+    return hidden_states
 
 
 def get_llm_obs(obs, config):

@@ -161,7 +161,7 @@ class CustomLlamaModel(LlamaModel):
                     hidden_states[torch.arange(batch_size).unsqueeze(1), safe_indices]
                 ).flatten(start_dim=1)
                 all_hidden_states += (
-                    temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True),
+                    (temp_hidden_states / temp_hidden_states.sum(axis=1, keepdim=True)),
                 )
                 # all_hidden_states += (
                 #     torch.clamp(temp_hidden_states, min=0),
@@ -245,6 +245,9 @@ class CustomLlamaModel(LlamaModel):
                     all_self_attns += (layer_outputs[1],)
 
             if idx + 1 == max(target_layer):
+                all_hidden_states = torch.stack(all_hidden_states, dim=-1).flatten(start_dim=1)
+                if output_attentions:
+                    all_self_attns = torch.stack(all_self_attns, dim=-1).flatten(start_dim=1)
                 return all_hidden_states, all_self_attns
 
         hidden_states = self.norm(hidden_states)
