@@ -677,7 +677,7 @@ if __name__ == "__main__":
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--gae_lambda", type=float, default=0.8)
     parser.add_argument("--clip_eps", type=float, default=0.2)
-    parser.add_argument("--ent_coef", type=float, default=0.01)
+    parser.add_argument("--ent_coef", type=float, default=0.1)
     parser.add_argument("--vf_coef", type=float, default=0.5)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--activation", type=str, default="tanh")
