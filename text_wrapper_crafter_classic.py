@@ -22,7 +22,7 @@ all_block_types = np.array(
         "RIPE_PLANT",
     ]
 )
-all_mob_types = np.array(["", "Cravox", "Cow", "Skeleton", "Arrow"])
+all_mob_types = np.array(["", "CRAVOX", "COW", "SKELETON", "ARROW"])
 
 Block_id_to_text = {
     0: "INVALID",
@@ -46,25 +46,25 @@ Block_id_to_text = {
 
 mob_id_to_text = {
     0: "",
-    1: "Cravox",
-    2: "Cow",
-    3: "Skeleton",
-    4: "Arrow",
+    1: "CRAVOX",
+    2: "COW",
+    3: "SKELETON",
+    4: "ARROW",
 }
 
 Inventory_Items = [
-    "Wood",
-    "Stone",
-    "Coal",
-    "Iron",
-    "Diamond",
-    "Sapling",
-    "Wooden Pickaxe",
-    "Stone Pickaxe",
-    "Iron Pickaxe",
-    "Wooden Sword",
-    "Stone Sword",
-    "Iron Sword",
+    "WOOD",
+    "STONE",
+    "COAL",
+    "IRON",
+    "DIAMOND",
+    "SAPLING",
+    "WOODEN PICKAXE",
+    "STONE PICKAXE",
+    "IRON PICKAXE",
+    "WOODEN SWORD",
+    "STONE SWORD",
+    "IRON SWORD",
 ]
 
 Intrinsic_Items = [
@@ -272,16 +272,19 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=2):
         ]
     )
 
-    inventory_array = np.argwhere(symbolic_array[1323:1335] > 0).flatten()
-    if inventory_array.size > 0:
-        inventory_description = (
-            "The agent can store a total of 12 different types of items in its inventory: "
-        )
-        inventory_description += ", ".join([Inventory_Items[i] for i in range(12)])
-        inventory_description += ". You currently have the following items in your inventory: "
+    inventory = ((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
+    inventory_description = (
+        "The agent can store a total of 12 different types of items in its inventory: "
+    )
+    inventory_description += ", ".join([Inventory_Items[i].upper() for i in range(12)]) + "."
+    text_description.append(inventory_description)
+
+    if inventory.sum() > 0:
+        inventory_array = np.argwhere(inventory > 0).flatten()
+        inventory_description = "You currently have the following items in your inventory: "
         text_description.append(inventory_description)
         for inv_idx in inventory_array:
-            item_count = symbolic_array[1323:1335][inv_idx]
+            item_count = inventory[inv_idx]
             text_description.append(
                 "The agent has " + str(item_count) + " units of " + Inventory_Items[inv_idx]
             )
@@ -304,7 +307,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=2):
         )
 
     text_description.append(
-        "The brightness level of the environment indicates the time of the day. The light level is "
+        "The brightness level of the environment indicates the time of the day. The brightness level is "
         + str(np.around(symbolic_array[1343] * 100, 2))
         + "%."
     )
