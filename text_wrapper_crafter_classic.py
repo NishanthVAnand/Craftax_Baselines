@@ -22,10 +22,11 @@ Block_id_to_text = {
 }
 
 mob_id_to_text = {
-    0: "Zombie",
-    1: "Cow",
-    2: "Skeleton",
-    3: "Arrow",
+    0: "None",
+    1: "Zombie",
+    2: "Cow",
+    3: "Skeleton",
+    4: "Arrow",
 }
 
 Inventory_Items = [
@@ -111,7 +112,12 @@ distance_lookup = generate_distance_dict(
 )  # precompute all possible movement descriptions within a given range
 
 
-def symbolic_to_text_numpy(symbolic_array):
+def symbolic_to_text_numpy(symbolic_array, obs_type=0):
+    """
+    obs_type: 0 for nearest only
+    obs_type: 1 for all
+    obs_type: 2 for map view
+    """
 
     text_description = []
     meta_prompt = "You are an intelligent agent exploring the world of Crafter — a procedurally generated open-ended survival game. "
@@ -139,21 +145,26 @@ def symbolic_to_text_numpy(symbolic_array):
     # Block types description
     symbolic_array_map_blocks = symbolic_array_map_reshaped[:, :, :17]
     if symbolic_array_map_blocks.sum() > 0:
-        block_description = "There are a total of 17 different types of blocks: "
-        block_description += ", ".join([Block_id_to_text[i] for i in range(17)])
+        block_description = "There are a total of 16 different types of blocks: "
+        block_description += ", ".join([Block_id_to_text[i + 1] for i in range(16)])
         block_description += ". The following blocks appear in your sight: "
         text_description.append(block_description)
         block_types = np.argmax(symbolic_array_map_blocks, axis=-1)
         unique_blocks = np.unique(block_types)
-        unique_blocks = unique_blocks[~np.isin(unique_blocks, [0, 1])]
+        unique_blocks = unique_blocks[~np.isin(unique_blocks, [1])]
         for block in unique_blocks:
             curr_block_mask = block_types == block
             curr_block_mask[OBS_DIM[0] // 2, OBS_DIM[1] // 2] = False
             curr_blocks = distance_matrix * curr_block_mask
-            curr_blocks_max_dist = np.where(curr_block_mask, curr_blocks, max_distance)
-            min_distance_curr_block = np.min(curr_blocks_max_dist)
-            min_dist_indices = np.argwhere(curr_blocks_max_dist == min_distance_curr_block)
-            relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
+            if obs_type == 0:
+                curr_blocks_max_dist = np.where(curr_block_mask, curr_blocks, max_distance)
+                min_distance_curr_block = np.min(curr_blocks_max_dist)
+                min_dist_indices = np.argwhere(curr_blocks_max_dist == min_distance_curr_block)
+                relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
+            elif obs_type == 1:
+                relative_pos = np.argwhere(curr_blocks > 0) - np.array(
+                    [OBS_DIM[0] // 2, OBS_DIM[1] // 2]
+                )
             distance_tuples = [tuple(map(int, d)) for d in relative_pos]
             descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
             text_description.append(Block_id_to_text[block] + " is at " + ", ".join(descriptions))
@@ -174,21 +185,30 @@ def symbolic_to_text_numpy(symbolic_array):
 
     # Mob types description
     symbolic_array_map_mobs = symbolic_array_map_reshaped[:, :, 17:21]
+    symbolic_array_map_mobs = np.concatenate(
+        [np.zeros((OBS_DIM[0], OBS_DIM[1], 1)), symbolic_array_map_mobs], axis=-1
+    )
     if symbolic_array_map_mobs.sum() > 0:
         mob_types = np.argmax(symbolic_array_map_mobs, axis=-1)
         mob_description = "There are a total of 4 different types of mobile objects: "
-        mob_description += ", ".join([mob_id_to_text[i] for i in range(4)])
+        mob_description += ", ".join([mob_id_to_text[i + 1] for i in range(4)])
         mob_description += ". The following mobile objects appear in your sight: "
         text_description.append(mob_description)
         unique_mobs = np.unique(mob_types)
+        unique_mobs = unique_mobs[~np.isin(unique_mobs, [0])]
         for mob in unique_mobs:
             curr_mob_mask = mob_types == mob
             curr_mob_mask[OBS_DIM[0] // 2, OBS_DIM[1] // 2] = False
             curr_mobs = distance_matrix * curr_mob_mask
-            curr_mobs_max_dist = np.where(curr_mob_mask, curr_mobs, max_distance)
-            min_distance_curr_mob = np.min(curr_mobs_max_dist)
-            min_dist_indices = np.argwhere(curr_mobs_max_dist == min_distance_curr_mob)
-            relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
+            if obs_type == 0:
+                curr_mobs_max_dist = np.where(curr_mob_mask, curr_mobs, max_distance)
+                min_distance_curr_mob = np.min(curr_mobs_max_dist)
+                min_dist_indices = np.argwhere(curr_mobs_max_dist == min_distance_curr_mob)
+                relative_pos = min_dist_indices - np.array([OBS_DIM[0] // 2, OBS_DIM[1] // 2])
+            elif obs_type == 1:
+                relative_pos = np.argwhere(curr_mobs > 0) - np.array(
+                    [OBS_DIM[0] // 2, OBS_DIM[1] // 2]
+                )
             distance_tuples = [tuple(map(int, d)) for d in relative_pos]
             descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
             text_description.append(mob_id_to_text[mob] + " is at: " + ", ".join(descriptions))
