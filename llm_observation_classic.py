@@ -18,7 +18,7 @@ local_dir = "/home/s/saminur/scratch/huggingface/hub/models--meta-llama--Meta-Ll
 llm_pretrained_all = [
     CustomLlamaForCausalLM.from_pretrained(
         local_dir,
-        torch_dtype=torch.float16,
+        torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
         device_map="auto",
     )
