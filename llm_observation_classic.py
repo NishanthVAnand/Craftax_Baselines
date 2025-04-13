@@ -64,16 +64,20 @@ def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split):
     return hidden_states
 
 
-def get_llm_obs(obs, layer, emb_type, decay, eq_split):
+def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
     obs = np.array(obs)
     layer = [int(lay) for lay in layer]
     emb_type = int(emb_type)
     decay = float(decay)
     eq_split = int(eq_split)
+    obs_type = int(obs_type)
+    obs_only = int(obs_only)
 
     text_obs = []
     for curr_obs in obs:
-        curr_text_list = symbolic_to_text_numpy(curr_obs)
+        curr_text_list = symbolic_to_text_numpy(
+            symbolic_array=curr_obs, obs_type=obs_type, obs_only=obs_only
+        )
         curr_text = "\n".join(curr_text_list)
         text_obs.append(curr_text)
 
@@ -89,6 +93,8 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split):
             embed.append(future.result().cpu().numpy().astype(np.float32))
 
     numpy_embed = np.concatenate(embed, axis=0)
+    if obs_only:
+        numpy_embed = np.concatenate([numpy_embed, obs[:, 1323:]], axis=1)
 
     torch.cuda.empty_cache()
 
