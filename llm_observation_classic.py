@@ -13,7 +13,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 num_gpus = torch.cuda.device_count()
-local_dir = "/network/weights/llama.var/llama_3.1/Meta-Llama-3.1-8B-Instruct/"
+local_dir = "/home/s/saminur/scratch/huggingface/hub/models--meta-llama--Meta-Llama-3-8B-Instruct/snapshots/5f0b02c75b57c5855da9ae460ce51323ea669d8a/"
 
 llm_pretrained_all = [
     CustomLlamaForCausalLM.from_pretrained(
