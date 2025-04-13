@@ -20,10 +20,8 @@ llm_pretrained_all = [
         local_dir,
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
-        device_map="auto",
-    )
-    .to(f"cuda:{i}")
-    .eval()
+        device_map={"": i},
+    ).eval()
     for i in range(1, num_gpus)
 ]
 tokenizer = AutoTokenizer.from_pretrained(local_dir)
@@ -31,12 +29,21 @@ tokenizer = AutoTokenizer.from_pretrained(local_dir)
 for llm_pretrained in llm_pretrained_all:
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({"pad_token": "<pad>"})
-    llm_pretrained.resize_token_embeddings(len(tokenizer), mean_resizing=False)
-    embedding_dim = llm_pretrained.get_input_embeddings().weight.shape[1]
-    padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
+    # llm_pretrained.resize_token_embeddings(len(tokenizer), mean_resizing=False)
+    # embedding_dim = llm_pretrained.get_input_embeddings().weight.shape[1]
+    # padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    with torch.no_grad():
-        llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(embedding_dim)
+# for llm_pretrained in llm_pretrained_all:
+#     if tokenizer.pad_token is None:
+#         tokenizer.add_special_tokens({"pad_token": "<pad>"})
+#     llm_pretrained.resize_token_embeddings(len(tokenizer), mean_resizing=False)
+#     embedding_dim = llm_pretrained.get_input_embeddings().weight.shape[1]
+#     padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
+
+#     with torch.no_grad():
+#         llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(embedding_dim)
 
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 

@@ -1,6 +1,53 @@
 from craftax.craftax_classic.constants import *
 import numpy as np
 
+all_block_types_neutral = np.array(
+    [
+        "ZENTH",  # INVALID
+        "VORIN",  # OUT_OF_BOUNDS
+        "MIRAQ",  # GRASS
+        "SYNEX",  # WATER
+        "DRAEL",  # STONE
+        "TREXO",  # TREE
+        "WODEN",  # WOOD
+        "TRAKO",  # PATH
+        "COBRAX",  # COAL
+        "FERON",  # IRON
+        "LUMEX",  # DIAMOND
+        "CRAFIX",  # CRAFTING_TABLE
+        "FURNIQ",  # FURNACE
+        "SANDRA",  # SAND
+        "LAVOS",  # LAVA
+        "PLENTH",  # PLANT
+        "RIPEL",  # RIPE_PLANT
+    ]
+)
+
+all_mob_types_neutral = np.array(
+    [
+        "",  # (empty)
+        "CRAVOX",  # CRAVOX (kept for flair)
+        "BOVRA",  # COW
+        "SKELOM",  # SKELETON
+        "VOLTRA",  # ARROW
+    ]
+)
+
+Inventory_Items_neutral = [
+    "COREBRICK",  # WOOD
+    "HARDNODE",  # STONE
+    "DARKDUST",  # COAL
+    "FERROCORE",  # IRON
+    "LUMENCRYST",  # DIAMOND
+    "SPAWNSTEM",  # SAPLING
+    "GEARPICK",  # WOODEN PICKAXE
+    "STRIKECORE",  # STONE PICKAXE
+    "METAPICK",  # IRON PICKAXE
+    "SLASHFORM",  # WOODEN SWORD
+    "EDGELITH",  # STONE SWORD
+    "IRONSPIKE",  # IRON SWORD
+]
+
 all_block_types = np.array(
     [
         "INVALID",
@@ -173,11 +220,11 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
 
     if obs_type == 2:
         block_description = "There are a total of 16 different types of blocks: "
-        block_description += ", ".join([Block_id_to_text[i + 1] for i in range(16)])
+        block_description += ", ".join(all_block_types)
         text_description.append(block_description)
 
         mob_description = "There are a total of 4 different types of mobile objects: "
-        mob_description += ", ".join([mob_id_to_text[i + 1] for i in range(4)])
+        mob_description += ", ".join(all_mob_types)
         text_description.append(mob_description)
 
         grid_description = "Below is the observation that is visible to the agent. "
@@ -197,6 +244,42 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         block_types_str = all_block_types[block_types]
         block_types_str[OBS_DIM[0] // 2, OBS_DIM[1] // 2] = "Agent"
         mob_types_str = all_mob_types[mob_types]
+
+        both_types = np.where(
+            mob_types_str != "",
+            np.char.add(
+                np.char.add(block_types_str.astype(str), " and "), mob_types_str.astype(str)
+            ),
+            block_types_str,
+        )
+        text_description.append("\n".join(["@ " + " | ".join(row) + " @" for row in both_types]))
+
+    elif obs_type == 3:
+        block_description = "There are a total of 16 different types of blocks: "
+        block_description += ", ".join(all_block_types_neutral)
+        text_description.append(block_description)
+
+        mob_description = "There are a total of 4 different types of mobile objects: "
+        mob_description += ", ".join(all_mob_types_neutral)
+        text_description.append(mob_description)
+
+        grid_description = "Below is the observation that is visible to the agent. "
+        grid_description += "This is a 7×7 grid, where each cell describes a combination of block type and a mobile object type (if present). "
+        grid_description += "The map is organized in rows and columns, and each cell contains a string in the format: <block type> and <mobile object type>. "
+        grid_description += (
+            "The grid is ordered row by row, from top to bottom, and from left to right. "
+        )
+        grid_description += (
+            "Each row represents a horizontal slice of the map and the rows are separated by @. "
+        )
+        text_description.append(grid_description)
+
+        block_types = np.argmax(symbolic_array_map_blocks, axis=-1)
+        mob_types = np.argmax(symbolic_array_map_mobs, axis=-1)
+
+        block_types_str = all_block_types_neutral[block_types]
+        block_types_str[OBS_DIM[0] // 2, OBS_DIM[1] // 2] = "Agent"
+        mob_types_str = all_mob_types_neutral[mob_types]
 
         both_types = np.where(
             mob_types_str != "",
@@ -283,7 +366,12 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     inventory_description = (
         "The agent can store a total of 12 different types of items in its inventory: "
     )
-    inventory_description += ", ".join([Inventory_Items[i].upper() for i in range(12)]) + "."
+    if obs_type == 3:
+        inventory_description += (
+            ", ".join([Inventory_Items_neutral[i].upper() for i in range(12)]) + "."
+        )
+    else:
+        inventory_description += ", ".join([Inventory_Items[i].upper() for i in range(12)]) + "."
     text_description.append(inventory_description)
 
     if inventory.sum() > 0:
@@ -292,9 +380,17 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         text_description.append(inventory_description)
         for inv_idx in inventory_array:
             item_count = inventory[inv_idx]
-            text_description.append(
-                "The agent has " + str(item_count) + " units of " + Inventory_Items[inv_idx]
-            )
+            if obs_type == 3:
+                text_description.append(
+                    "The agent has "
+                    + str(item_count)
+                    + " units of "
+                    + Inventory_Items_neutral[inv_idx]
+                )
+            else:
+                text_description.append(
+                    "The agent has " + str(item_count) + " units of " + Inventory_Items[inv_idx]
+                )
 
     intrinsic_array = symbolic_array[1335:1339]
     text_description.append(
