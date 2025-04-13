@@ -2,7 +2,7 @@ import torch
 import numpy as np
 
 from text_wrapper_crafter_classic import *
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer, BitsAndBytesConfig
 
 from custom_llama import CustomLlamaForCausalLM
 from concurrent.futures import ThreadPoolExecutor
@@ -13,30 +13,38 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 num_gpus = torch.cuda.device_count()
-local_dir = "/network/weights/llama.var/llama_3.1/Meta-Llama-3.1-8B-Instruct/"
+# local_dir = "/network/weights/llama.var/llama_3.1/Meta-Llama-3.1-8B-Instruct/"
+local_dir = "/network/weights/llama.var/llama_3.1/Meta-Llama-3.1-70B-Instruct/"
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,  # Enable nested quantization
+    bnb_4bit_quant_type="nf4",  # Use Normal Float 4 data type
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
 
 llm_pretrained_all = [
     CustomLlamaForCausalLM.from_pretrained(
         local_dir,
-        torch_dtype=torch.float16,
-        low_cpu_mem_usage=True,
-        device_map="auto",
-    )
-    .to(f"cuda:{i}")
-    .eval()
+        device_map={"": f"cuda:{i}"},
+        quantization_config=bnb_config,
+    ).eval()
     for i in range(1, num_gpus)
 ]
+
 tokenizer = AutoTokenizer.from_pretrained(local_dir)
 
 for llm_pretrained in llm_pretrained_all:
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({"pad_token": "<pad>"})
-    llm_pretrained.resize_token_embeddings(len(tokenizer), mean_resizing=False)
-    embedding_dim = llm_pretrained.get_input_embeddings().weight.shape[1]
-    padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
+    # llm_pretrained.resize_token_embeddings(len(tokenizer), mean_resizing=False)
+    # embedding_dim = llm_pretrained.get_input_embeddings().weight.shape[1]
+    # padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    with torch.no_grad():
-        llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(embedding_dim)
+    # with torch.no_grad():
+    #     llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(embedding_dim)
 
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
@@ -82,6 +90,9 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
         curr_text = "\n".join(curr_text_list)
         text_obs.append(curr_text)
 
+    # embed = gpu_inference(text_obs, layer, emb_type, decay, eq_split)
+    # numpy_embed = embed.cpu().numpy().astype(np.float32)
+
     text_obs_chunks = [text_obs[i :: num_gpus - 1] for i in range(num_gpus - 1)]
 
     embed = []
@@ -94,6 +105,7 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
             embed.append(future.result().cpu().numpy().astype(np.float32))
 
     numpy_embed = np.concatenate(embed, axis=0)
+
     if obs_only:
         numpy_embed = np.concatenate([numpy_embed, obs[:, 1323:]], axis=1)
 
