@@ -136,11 +136,13 @@ distance_lookup = generate_distance_dict(
 )  # precompute all possible movement descriptions within a given range
 
 
-def symbolic_to_text_numpy(symbolic_array, obs_type=2):
+def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     """
     obs_type: 0 for nearest only
     obs_type: 1 for all
     obs_type: 2 for map view
+    obs_only: False then intrisincs and inventory are included
+    obs_only: True then only observation is included
     """
 
     text_description = []
@@ -271,6 +273,9 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=2):
             ]
         ]
     )
+
+    if obs_only:
+        return text_description
 
     inventory = ((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
     inventory_description = (

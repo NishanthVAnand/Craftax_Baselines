@@ -136,6 +136,8 @@ def make_train(config):
                 config["EMB_TYPE"],
                 config["DECAY"],
                 config["EQ_SPLIT"],
+                config["OBS_TYPE"],
+                config["OBS_ONLY"],
             )
             obs_shape = obs_llm.shape[0]
 
@@ -222,6 +224,8 @@ def make_train(config):
             config["EMB_TYPE"],
             config["DECAY"],
             config["EQ_SPLIT"],
+            config["OBS_TYPE"],
+            config["OBS_ONLY"],
         )
 
         # TRAIN LOOP
@@ -259,6 +263,8 @@ def make_train(config):
                     config["EMB_TYPE"],
                     config["DECAY"],
                     config["EQ_SPLIT"],
+                    config["OBS_TYPE"],
+                    config["OBS_ONLY"],
                 )
 
                 reward_i = jnp.zeros(config["NUM_ENVS"])
@@ -700,6 +706,10 @@ if __name__ == "__main__":
     parser.add_argument("--decay", type=float, default=0.9)
     parser.add_argument("--emb_type", type=int, default=0, help="0: mean, 1: exp")
     parser.add_argument("--eq_split", type=int, default=16, help="how many equal parts")
+    parser.add_argument(
+        "--obs_type", type=int, default=2, help="0: nearest only text, 1: all text, 2: all map"
+    )
+    parser.add_argument("--obs_only", type=int, default=0, help="0: use all, 1: only obs")
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)
@@ -721,13 +731,13 @@ if __name__ == "__main__":
         raise ValueError(f"Unknown args {rest_args}")
 
     emb_dict_map = {
-        0: 4096 * len(args.layer),
-        1: 4096 * len(args.layer),
-        2: 4096 * len(args.layer),
-        3: 4096 * int(args.eq_split) * len(args.layer),
-        4: 4096 * int(args.eq_split) * len(args.layer),
-        5: 4096 * len(args.layer),
-        6: 4096 * int(args.eq_split) * len(args.layer),
+        0: 4096 * len(args.layer) + args.obs_only * 22,
+        1: 4096 * len(args.layer) + args.obs_only * 22,
+        2: 4096 * len(args.layer) + args.obs_only * 22,
+        3: 4096 * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
+        4: 4096 * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
+        5: 4096 * len(args.layer) + args.obs_only * 22,
+        6: 4096 * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
     }
     args.num_params = emb_dict_map[int(args.emb_type)]
 
