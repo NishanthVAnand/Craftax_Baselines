@@ -186,7 +186,9 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         grid_description += (
             "The grid is ordered row by row, from top to bottom, and from left to right. "
         )
-        grid_description += "Each row represents a continuous horizontal slice of the map. "
+        grid_description += (
+            "Each row represents a horizontal slice of the map and the rows are separated by @. "
+        )
         text_description.append(grid_description)
 
         block_types = np.argmax(symbolic_array_map_blocks, axis=-1)
@@ -203,7 +205,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
             ),
             block_types_str,
         )
-        text_description.append("\n".join([" | ".join(row) for row in both_types]))
+        text_description.append("\n".join(["@ " + " | ".join(row) + " @" for row in both_types]))
 
     else:
         # Block types description

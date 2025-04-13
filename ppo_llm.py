@@ -710,6 +710,7 @@ if __name__ == "__main__":
         "--obs_type", type=int, default=2, help="0: nearest only text, 1: all text, 2: all map"
     )
     parser.add_argument("--obs_only", type=int, default=0, help="0: use all, 1: only obs")
+    parser.add_argument("--model", type=int, default=0, help="0: llama-8B, 1: llama-70B")
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)
@@ -730,14 +731,19 @@ if __name__ == "__main__":
     if rest_args:
         raise ValueError(f"Unknown args {rest_args}")
 
+    if args.model == 0:
+        hidden_size = 4096
+    elif args.model == 1:
+        hidden_size = 8192
+
     emb_dict_map = {
-        0: 4096 * len(args.layer) + args.obs_only * 22,
-        1: 4096 * len(args.layer) + args.obs_only * 22,
-        2: 4096 * len(args.layer) + args.obs_only * 22,
-        3: 4096 * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
-        4: 4096 * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
-        5: 4096 * len(args.layer) + args.obs_only * 22,
-        6: 4096 * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
+        0: hidden_size * len(args.layer) + args.obs_only * 22,
+        1: hidden_size * len(args.layer) + args.obs_only * 22,
+        2: hidden_size * len(args.layer) + args.obs_only * 22,
+        3: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
+        4: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
+        5: hidden_size * len(args.layer) + args.obs_only * 22,
+        6: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
     }
     args.num_params = emb_dict_map[int(args.emb_type)]
 
@@ -750,7 +756,10 @@ if __name__ == "__main__":
     if args.env_name == "Craftax-Symbolic-v1":
         from llm_observation import *
     else:
-        from llm_observation_classic import *
+        if args.model == 0:
+            from llm_observation_classic import *
+        elif args.model == 1:
+            from llm_observation_classic_70B import *
 
     if args.jit:
         run_ppo(args)
