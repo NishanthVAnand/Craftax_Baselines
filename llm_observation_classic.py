@@ -98,7 +98,7 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
             for i in range(num_gpus - 1)
         ]
         for future in futures:
-            embed.append(future.result().cpu().numpy().astype(np.float32))
+            embed.append(future.result().to(dtype=torch.float32).cpu().numpy())
 
     numpy_embed = np.concatenate(embed, axis=0)
     if obs_only:
