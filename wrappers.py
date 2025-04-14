@@ -6,6 +6,8 @@ from flax import struct
 from functools import partial
 from typing import Optional, Tuple, Union, Any
 
+from craftax.craftax_classic.constants import *
+
 
 class GymnaxWrapper(object):
     """Base class for Gymnax wrappers."""
@@ -188,3 +190,35 @@ class LogWrapper(GymnaxWrapper):
         info["timestep"] = state.timestep
         info["returned_episode"] = done
         return obs, state, reward, done, info
+
+
+class RewardWrapper(GymnaxWrapper):
+    """Log the episode returns and lengths."""
+
+    def __init__(self, env, achievement):
+        super().__init__(env)
+        self.achievement = Achievement[achievement].value
+
+    @partial(jax.jit, static_argnums=(0, 4))
+    def step(
+        self,
+        key: chex.PRNGKey,
+        state,
+        action: Union[int, float],
+        params=None,
+    ):
+        init_health = state.player_health
+        obs, env_state, _, _, info = self._env.step(key, state, action, params)
+        achievement_reward = env_state.achievements[self.achievement].astype(int)
+        health_reward = (env_state.player_health - init_health) * 0.1  # health reward original
+        reward = achievement_reward + health_reward
+        done = jax.lax.cond(
+            env_state.achievements[self.achievement].astype(int) > 0,
+            lambda _: jnp.array(True),
+            lambda _: jnp.array(False),
+            operand=None,
+        )
+        env_state = env_state.replace(
+            achievements=jnp.zeros_like(env_state.achievements, dtype=bool)
+        )
+        return obs, env_state, reward, done, info

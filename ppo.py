@@ -31,6 +31,7 @@ from wrappers import (
     OptimisticResetVecEnvWrapper,
     BatchEnvWrapper,
     AutoResetEnvWrapper,
+    RewardWrapper,
 )
 
 # Code adapted from the original implementation made by Chris Lu
@@ -56,7 +57,8 @@ def make_train(config):
 
     env = make_craftax_env_from_name(config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"])
     env_params = env.default_params
-
+    if config["ACHIEVEMENT"] is not None:
+        env = RewardWrapper(env, config["ACHIEVEMENT"])
     env = LogWrapper(env)
     if config["USE_OPTIMISTIC_RESETS"]:
         env = OptimisticResetVecEnvWrapper(
@@ -415,7 +417,6 @@ def make_train(config):
                 / traj_batch.info["returned_episode"].sum(),
                 traj_batch.info,
             )
-
             rng = update_state[-1]
 
             # UPDATE EXPLORATION STATE
@@ -617,6 +618,7 @@ if __name__ == "__main__":
         type=int,
         default=1024,
     )
+    parser.add_argument("--achievement", type=str, default="PLACE_TABLE")
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=1e9
     )  # Allow scientific notation
