@@ -10,11 +10,11 @@ if __name__ == '__main__':
     os.makedirs(temp_job_script_directory, exist_ok=True)
 
 
-    for emb_type in [0, 1, 4, 5]:
+    for emb_type in [0]:
         for lr in [8e-4, 3e-4, 1e-4, 8e-5, 3e-5]:
             for seed in list(range(3)):
 
-                python_run_command = f"python ppo_llm.py --total_timesteps=200000 --num_envs=256 --lr={lr} --num_steps=16 --wandb_project='LLM-play' --wandb_entity='doina-precup' --seed={seed} --network_type='ActorCriticLinear' --layer 17 --emb_type={emb_type} --eq_split=8 --env_name=Craftax-Classic-Symbolic-v1 --ent_coef=0.1 --obs_type=2 --obs_only=0 --achievement='PLACE_TABLE'"
+                python_run_command = f"python ppo_llm.py --total_timesteps=200000 --num_envs=256 --lr={lr} --num_steps=16 --wandb_project='LLM-play' --wandb_entity='doina-precup' --seed={seed} --network_type='ActorCriticLinear' --layer 17 --emb_type={emb_type} --eq_split=8 --env_name=Craftax-Classic-Symbolic-v1 --obs_type=2 --obs_only=0 --achievement='PLACE_TABLE'"
 
                 job_script_content = f'''#!/bin/bash
 
@@ -49,4 +49,4 @@ eval $python_command
                 subprocess.run(launch_command, shell=True,
                                executable='/bin/bash')
 
-                # os.remove(job_script_file_path)
+                os.remove(job_script_file_path)
