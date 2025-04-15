@@ -7,6 +7,7 @@ from functools import partial
 from typing import Optional, Tuple, Union, Any
 
 from craftax.craftax_classic.constants import *
+from craftax.craftax_classic.envs.common import compute_score
 
 
 class GymnaxWrapper(object):
