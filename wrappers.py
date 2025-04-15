@@ -208,15 +208,12 @@ class RewardWrapper(GymnaxWrapper):
         action: Union[int, float],
         params=None,
     ):
+        obs, env_state, _, done_old, info = self._env.step(key, state, action, params)
+        achievement_done = env_state.achievements[self.achievement]
+        achievement_reward = achievement_done.astype(jnp.float32)
         init_health = state.player_health
-        obs, env_state, _, _, info = self._env.step(key, state, action, params)
-        achievement_reward = env_state.achievements[self.achievement].astype(int)
         health_reward = (env_state.player_health - init_health) * 0.1  # health reward original
+        # health_reward = 0
         reward = achievement_reward + health_reward
-        done = jax.lax.cond(
-            env_state.achievements[self.achievement].astype(int) > 0,
-            lambda _: jnp.array(True),
-            lambda _: jnp.array(False),
-            operand=None,
-        )
+        done = jnp.logical_or(done_old, achievement_done)
         return obs, env_state, reward, done, info

@@ -1,0 +1,50 @@
+2e5 1e-3 0 COLLECT_STONE
+Loading Craftax-Classic textures from cache.
+Textures successfully loaded from cache.
+Started logging
+Time to run experiment 47.93030142784119
+SPS:  4172.7256879679535
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mCraftax-Classic-Symbolic-v1-0M[0m at: [34mhttps://wandb.ai/doina-precup/LLM-Play/runs/6webrb4e[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20250415_003849-6webrb4e/logs[0m
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Tue Apr 15 00:39:40 2025
+Driver Version                            : 560.35.03
+CUDA Version                              : 12.6
+
+Attached GPUs                             : 1
+GPU 00000000:81:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 2317482
+            GPU Utilization               : 6 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 30990 MiB
+            Time                          : 52798 ms
+            Is Running                    : 0
+
+Tue Apr 15 00:39:40 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:81:00.0 Off |                    0 |
+| N/A   30C    P0             63W /  400W |       1MiB /  40960MiB |     53%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
