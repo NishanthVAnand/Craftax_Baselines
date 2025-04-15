@@ -361,8 +361,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
 
     if obs_only:
         return text_description
-
-    inventory = ((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
+    inventory = np.round((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
     inventory_description = (
         "The agent can store a total of 12 different types of items in its inventory: "
     )
@@ -404,7 +403,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         text_description.append(
             Intrinsic_Items[intrinsic_idx]
             + " is "
-            + str(np.ceil(intrinsic_value * 10))
+            + str(round(intrinsic_value * 10))
             + "/10."
             + desc
         )
