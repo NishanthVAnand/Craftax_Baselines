@@ -80,4 +80,4 @@ def batch_log(update_step, log, config):
                 sps = steps_between_updates / dt
                 agg_logs["sps"] = sps
 
-        wandb.log(agg_logs)
+        wandb.log(agg_logs, step=update_step)
