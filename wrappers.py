@@ -199,6 +199,13 @@ class RewardWrapper(GymnaxWrapper):
     def __init__(self, env, achievement):
         super().__init__(env)
         self.achievement = Achievement[achievement].value
+        self.basic_rewards = jnp.array(
+            [
+                Achievement["WAKE_UP"].value,
+                Achievement["EAT_COW"].value,
+                Achievement["COLLECT_DRINK"].value,
+            ]
+        )
 
     @partial(jax.jit, static_argnums=(0, 4))
     def step(
@@ -208,12 +215,16 @@ class RewardWrapper(GymnaxWrapper):
         action: Union[int, float],
         params=None,
     ):
+        init_basic = state.achievements[self.basic_rewards].astype(jnp.float32)
         obs, env_state, _, done_old, info = self._env.step(key, state, action, params)
+        basic_reward = (
+            (env_state.achievements[self.basic_rewards]).astype(jnp.float32) - init_basic
+        ).sum()
         achievement_done = env_state.achievements[self.achievement]
         achievement_reward = achievement_done.astype(jnp.float32)
         init_health = state.player_health
         health_reward = (env_state.player_health - init_health) * 0.1  # health reward original
         # health_reward = 0
-        reward = achievement_reward + health_reward
+        reward = achievement_reward + health_reward + basic_reward
         done = jnp.logical_or(done_old, achievement_done)
         return obs, env_state, reward, done, info
