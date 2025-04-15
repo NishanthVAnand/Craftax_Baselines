@@ -24,7 +24,7 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 # device = torch.device("cuda:1")
 
 num_gpus = torch.cuda.device_count()
-local_dir = "/home/s/saminur/scratch/huggingface/hub/models--meta-llama--Meta-Llama-3-8B-Instruct/snapshots/5f0b02c75b57c5855da9ae460ce51323ea669d8a/"
+local_dir = "/home/s/saminur/scratch/huggingface/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/"
 
 llm_pretrained_all = [
     CustomLlamaForCausalLM.from_pretrained(
