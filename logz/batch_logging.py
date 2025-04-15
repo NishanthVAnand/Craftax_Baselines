@@ -12,6 +12,7 @@ def create_log_dict(info, config):
     to_log = {
         "episode_return": info["returned_episode_returns"],
         "episode_length": info["returned_episode_lengths"],
+        "score": info["score"],
     }
 
     sum_achievements = 0
@@ -42,7 +43,7 @@ def batch_log(update_step, log, config):
 
     batch_logs[update_step].append(log)
 
-    if len(batch_logs[update_step]) == config["NUM_REPEATS"]:
+    if len(batch_logs[update_step]) >= config["NUM_REPEATS"]:
         agg_logs = {}
         for key in batch_logs[update_step][0]:
             agg = []
