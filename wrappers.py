@@ -218,7 +218,4 @@ class RewardWrapper(GymnaxWrapper):
             lambda _: jnp.array(False),
             operand=None,
         )
-        env_state = env_state.replace(
-            achievements=jnp.zeros_like(env_state.achievements, dtype=bool)
-        )
         return obs, env_state, reward, done, info
