@@ -62,7 +62,9 @@ def make_train(config):
     env = make_craftax_env_from_name(config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"])
     env_params = env.default_params
     if config["ACHIEVEMENT"] is not None:
-        env = RewardWrapper(env, config["ACHIEVEMENT"])
+        from rewards import get_basic_rewards
+
+        env = RewardWrapper(env, config["ACHIEVEMENT"], get_basic_rewards(config["ACHIEVEMENT"]))
     env = LogWrapper(env)
     if config["USE_OPTIMISTIC_RESETS"]:
         env = OptimisticResetVecEnvWrapper(

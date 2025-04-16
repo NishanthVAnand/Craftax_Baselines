@@ -1,0 +1,96 @@
+python ppo_llm.py --total_timesteps=200000 --num_envs=256 --lr=0.0008 --num_steps=16 --wandb_project='LLM-play' --wandb_entity='doina-precup' --seed=0 --network_type='ActorCriticLinear' --layer 17 --emb_type=0 --eq_split=8 --env_name=Craftax-Classic-Symbolic-v1 --ent_coef=0.1 --obs_type=2 --obs_only=0 --achievement='PLACE_TABLE'
+Loading Craftax-Classic textures from cache.
+Textures successfully loaded from cache.
+Started logging
+Time to run experiment 1490.7366485595703
+SPS:  134.1618589663377
+[1;34mwandb[0m: 
+[1;34mwandb[0m: You can sync this run to the cloud by running:
+[1;34mwandb[0m: [1mwandb sync /home/s/saminur/LLM_representation/wt_craftax-experiments-sami/Craftax_Baselines/wandb/offline-run-20250414_224916-yjs0w3rn[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/offline-run-20250414_224916-yjs0w3rn/logs[0m
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Apr 14 23:14:11 2025
+Driver Version                            : 570.124.06
+CUDA Version                              : 12.8
+
+Attached GPUs                             : 4
+GPU 00000000:4E:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 1320348
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61728 MiB
+            Time                          : 1524759 ms
+            Is Running                    : 0
+
+GPU 00000000:5F:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 1320348
+            GPU Utilization               : 52 %
+            Memory Utilization            : 24 %
+            Max memory usage              : 27672 MiB
+            Time                          : 1524732 ms
+            Is Running                    : 0
+
+GPU 00000000:CB:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 1320348
+            GPU Utilization               : 50 %
+            Memory Utilization            : 25 %
+            Max memory usage              : 27632 MiB
+            Time                          : 1524716 ms
+            Is Running                    : 0
+
+GPU 00000000:DB:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 1320348
+            GPU Utilization               : 51 %
+            Memory Utilization            : 24 %
+            Max memory usage              : 27512 MiB
+            Time                          : 1524699 ms
+            Is Running                    : 0
+
+Mon Apr 14 23:14:12 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.124.06             Driver Version: 570.124.06     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100 80GB HBM3          On  |   00000000:4E:00.0 Off |                    0 |
+| N/A   55C    P0            149W /  700W |       1MiB /  81559MiB |    100%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA H100 80GB HBM3          On  |   00000000:5F:00.0 Off |                    0 |
+| N/A   54C    P0            138W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA H100 80GB HBM3          On  |   00000000:CB:00.0 Off |                    0 |
+| N/A   54C    P0            142W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA H100 80GB HBM3          On  |   00000000:DB:00.0 Off |                    0 |
+| N/A   55C    P0            137W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
