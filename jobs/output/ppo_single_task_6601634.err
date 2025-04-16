@@ -1,0 +1,25 @@
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+[=== Module python/3.9 loaded ===]
+[=== Module cudatoolkit/12.6.0 loaded ===]
+2025-04-16 00:06:39.279359: W external/xla/xla/service/gpu/nvptx_compiler.cc:765] The NVIDIA driver's CUDA version is 12.6 which is older than the ptxas CUDA version (12.8.93). Because the driver is older than the ptxas version, XLA is disabling parallel compilation, which may slow down compilation. You should update your NVIDIA driver or use the NVIDIA-provided CUDA forward compatibility packages.
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: nishanth127127 (aifgen) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.8
+wandb: Run data is saved locally in /home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/wandb/run-20250416_000641-33ydhjil
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run Craftax-Classic-Symbolic-v1-0M
+wandb: ⭐️ View project at https://wandb.ai/doina-precup/LLM-Play
+wandb: 🚀 View run at https://wandb.ai/doina-precup/LLM-Play/runs/33ydhjil
+Traceback (most recent call last):
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo.py", line 679, in <module>
+    run_ppo(args)
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo.py", line 585, in run_ppo
+    train_jit = jax.jit(make_train(config))
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/ppo.py", line 63, in make_train
+    env = RewardWrapper(env, config["ACHIEVEMENT"], get_basic_rewards(config["ACHIEVEMENT"]))
+  File "/home/mila/a/anandnis/value_decomposition/v5/CoLLAs_2025/crafter_jax/Craftax_Baselines/rewards.py", line 22, in get_basic_rewards
+    Achievement["SAPLING"].value,
+  File "/cvmfs/ai.mila.quebec/apps/arch/distro/python/3.9/lib/python3.9/enum.py", line 432, in __getitem__
+    return cls._member_map_[name]
+KeyError: 'SAPLING'
