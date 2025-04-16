@@ -9,16 +9,16 @@ if __name__ == '__main__':
 
     os.makedirs(temp_job_script_directory, exist_ok=True)
 
+    for achievement in ["PLACE_TABLE", "EAT_PLANT", "MAKE_WOOD_PICKAXE", "MAKE_WOOD_SWORD"]:
+        for emb_type in [0]:
+            for lr in [3e-4]:
+                for seed in [0, 1, 2]:
 
-    for emb_type in [0]:
-        for lr in [8e-4, 3e-4, 1e-4, 8e-5, 3e-5]:
-            for seed in list(range(3)):
+                    python_run_command = f"python ppo_llm.py --total_timesteps=500001 --num_envs=256 --lr={lr} --num_steps=16 --wandb_project='LLM-play' --wandb_entity='doina-precup' --seed={seed} --network_type='ActorCriticLinear' --layer 17 --emb_type={emb_type} --eq_split=8 --env_name=Craftax-Classic-Symbolic-v1 --obs_type=2 --obs_only=0 --achievement={achievement}"
 
-                python_run_command = f"python ppo_llm.py --total_timesteps=200000 --num_envs=256 --lr={lr} --num_steps=16 --wandb_project='LLM-play' --wandb_entity='doina-precup' --seed={seed} --network_type='ActorCriticLinear' --layer 17 --emb_type={emb_type} --eq_split=8 --env_name=Craftax-Classic-Symbolic-v1 --obs_type=2 --obs_only=0 --achievement='PLACE_TABLE'"
+                    job_script_content = f'''#!/bin/bash
 
-                job_script_content = f'''#!/bin/bash
-
-#SBATCH --time=3:0:0
+#SBATCH --time=1:30:0
 #SBATCH --mem=32GB
 #SBATCH --gres=gpu:4
 #SBATCH --nodes=1
@@ -38,15 +38,16 @@ echo $python_command
 eval $python_command
 '''
 
-                job_name = f"{seed}-{lr}-et_{emb_type}"
-                job_script_file_path = os.path.join(
-                    temp_job_script_directory, f"{job_name}-{random.randint(0, 700)}.sh")
+                    job_name = f"{achievement}-{seed}-{lr}-et_{emb_type}"
+                    job_script_file_path = os.path.join(
+                        temp_job_script_directory, f"{job_name}-{random.randint(0, 700)}.sh")
 
-                with open(job_script_file_path, 'w') as job_script_file:
-                    job_script_file.write(job_script_content)
+                    with open(job_script_file_path, 'w') as job_script_file:
+                        job_script_file.write(job_script_content)
 
-                launch_command = f'sbatch --job-name={job_name} {job_script_file_path}'
-                subprocess.run(launch_command, shell=True,
-                               executable='/bin/bash')
+                    print(f'Launching {job_name}')
+                    launch_command = f'sbatch --job-name={job_name} {job_script_file_path}'
+                    subprocess.run(launch_command, shell=True,
+                                   executable='/bin/bash')
 
-                os.remove(job_script_file_path)
+                    os.remove(job_script_file_path)
