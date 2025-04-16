@@ -196,16 +196,11 @@ class LogWrapper(GymnaxWrapper):
 class RewardWrapper(GymnaxWrapper):
     """Log the episode returns and lengths."""
 
-    def __init__(self, env, achievement):
+    def __init__(self, env, achievement, basic_rewards):
         super().__init__(env)
-        self.achievement = Achievement[achievement].value
-        self.basic_rewards = jnp.array(
-            [
-                Achievement["WAKE_UP"].value,
-                Achievement["EAT_COW"].value,
-                Achievement["COLLECT_DRINK"].value,
-            ]
-        )
+        self.achievement = jnp.array([Achievement[achievement].value])
+        self.basic_rewards = basic_rewards
+        self.all_rewards = jnp.concatenate([self.achievement, self.basic_rewards])
 
     @partial(jax.jit, static_argnums=(0, 4))
     def step(
@@ -215,16 +210,29 @@ class RewardWrapper(GymnaxWrapper):
         action: Union[int, float],
         params=None,
     ):
-        init_basic = state.achievements[self.basic_rewards].astype(jnp.float32)
-        obs, env_state, _, done_old, info = self._env.step(key, state, action, params)
-        basic_reward = (
-            (env_state.achievements[self.basic_rewards]).astype(jnp.float32) - init_basic
-        ).sum()
-        achievement_done = env_state.achievements[self.achievement]
-        achievement_reward = achievement_done.astype(jnp.float32)
+        obs, env_state, _, done, info = self._env.step(key, state, action, params)
         init_health = state.player_health
-        health_reward = (env_state.player_health - init_health) * 0.1  # health reward original
-        # health_reward = 0
-        reward = achievement_reward + health_reward + basic_reward
-        done = jnp.logical_or(done_old, achievement_done)
+        health_reward = (
+            env_state.player_health - init_health
+        ) * 0.1  # health reward original # health_reward = 0
+        init_achievement = state.achievements[self.all_rewards].astype(jnp.float32)
+        achievement_reward = (
+            (env_state.achievements[self.all_rewards]).astype(jnp.float32) - init_achievement
+        ).sum()
+        reward = health_reward + achievement_reward
+        # achievement_done = env_state.achievements[self.achievement]
+        # achievement_reward = achievement_done.astype(jnp.float32)
+        # base_reward = jax.lax.cond(
+        #     self.basic_rewards.size > 0,
+        #     lambda _: self.get_basic_rew(state, env_state),
+        #     lambda _: jnp.array(0.0, dtype=jnp.float32),
+        #     operand=None,
+        # )
+        # reward = achievement_reward + health_reward + base_reward
+        # done = jnp.logical_or(done_old, achievement_done)
         return obs, env_state, reward, done, info
+
+    @partial(jax.jit, static_argnums=(0,))
+    def get_basic_rew(self, state, env_state):
+        init_basic = state.achievements[self.basic_rewards].astype(jnp.float32)
+        return ((env_state.achievements[self.basic_rewards]).astype(jnp.float32) - init_basic).sum()
