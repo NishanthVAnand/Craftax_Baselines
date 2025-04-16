@@ -19,7 +19,7 @@ def get_basic_rewards(achievement):
                 Achievement["WAKE_UP"].value,
                 Achievement["EAT_COW"].value,
                 Achievement["COLLECT_DRINK"].value,
-                Achievement["SAPLING"].value,
+                Achievement["COLLECT_SAPLING"].value,
                 Achievement["PLACE_PLANT"].value,
             ],
             dtype=jnp.int32,

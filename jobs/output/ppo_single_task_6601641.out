@@ -1,0 +1,50 @@
+5e5 3e-4 2 MAKE_WOOD_SWORD
+Loading Craftax-Classic textures from cache.
+Textures successfully loaded from cache.
+Started logging
+Time to run experiment 62.76651334762573
+SPS:  7966.031141969008
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mCraftax-Classic-Symbolic-v1-0M[0m at: [34mhttps://wandb.ai/doina-precup/LLM-Play/runs/cdcumzrs[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20250416_000942-cdcumzrs/logs[0m
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Wed Apr 16 00:10:49 2025
+Driver Version                            : 560.35.03
+CUDA Version                              : 12.6
+
+Attached GPUs                             : 1
+GPU 00000000:C4:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 3803093
+            GPU Utilization               : 12 %
+            Memory Utilization            : 3 %
+            Max memory usage              : 34420 MiB
+            Time                          : 69290 ms
+            Is Running                    : 0
+
+Wed Apr 16 00:10:49 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Quadro RTX 8000                On  |   00000000:C4:00.0 Off |                    0 |
+| 33%   41C    P2             85W /  235W |       1MiB /  46080MiB |     81%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
