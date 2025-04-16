@@ -1,0 +1,158 @@
+
+======== GPU REPORT ========
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Wed Apr 16 18:28:49 2025
+Driver Version                            : 570.124.06
+CUDA Version                              : 12.8
+
+Attached GPUs                             : 4
+GPU 00000000:4E:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 832905
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61360 MiB
+            Time                          : 20280 ms
+            Is Running                    : 0
+        Process ID                        : 833160
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61360 MiB
+            Time                          : 9861 ms
+            Is Running                    : 0
+        Process ID                        : 833506
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61360 MiB
+            Time                          : 679075 ms
+            Is Running                    : 0
+        Process ID                        : 834301
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 61820 MiB
+            Time                          : 1293239 ms
+            Is Running                    : 0
+
+GPU 00000000:5F:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 832905
+            GPU Utilization               : 1 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 15848 MiB
+            Time                          : 20252 ms
+            Is Running                    : 0
+        Process ID                        : 833160
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 526 MiB
+            Time                          : 9834 ms
+            Is Running                    : 0
+        Process ID                        : 833506
+            GPU Utilization               : 1 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 39638 MiB
+            Time                          : 679048 ms
+            Is Running                    : 0
+        Process ID                        : 834301
+            GPU Utilization               : 36 %
+            Memory Utilization            : 19 %
+            Max memory usage              : 52890 MiB
+            Time                          : 1293212 ms
+            Is Running                    : 0
+
+GPU 00000000:CB:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 832905
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 15848 MiB
+            Time                          : 20237 ms
+            Is Running                    : 0
+        Process ID                        : 833160
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 526 MiB
+            Time                          : 9817 ms
+            Is Running                    : 0
+        Process ID                        : 833506
+            GPU Utilization               : 1 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 39640 MiB
+            Time                          : 679033 ms
+            Is Running                    : 0
+        Process ID                        : 834301
+            GPU Utilization               : 36 %
+            Memory Utilization            : 19 %
+            Max memory usage              : 52650 MiB
+            Time                          : 1293196 ms
+            Is Running                    : 0
+
+GPU 00000000:DB:00.0
+    Accounting Mode                       : Enabled
+    Accounting Mode Buffer Size           : 4000
+    Accounted Processes
+        Process ID                        : 832905
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 526 MiB
+            Time                          : 20222 ms
+            Is Running                    : 0
+        Process ID                        : 833160
+            GPU Utilization               : 0 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 526 MiB
+            Time                          : 9801 ms
+            Is Running                    : 0
+        Process ID                        : 833506
+            GPU Utilization               : 1 %
+            Memory Utilization            : 0 %
+            Max memory usage              : 39640 MiB
+            Time                          : 679017 ms
+            Is Running                    : 0
+        Process ID                        : 834301
+            GPU Utilization               : 36 %
+            Memory Utilization            : 19 %
+            Max memory usage              : 52570 MiB
+            Time                          : 1293168 ms
+            Is Running                    : 0
+
+Wed Apr 16 18:28:50 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.124.06             Driver Version: 570.124.06     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100 80GB HBM3          On  |   00000000:4E:00.0 Off |                    0 |
+| N/A   47C    P0            131W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA H100 80GB HBM3          On  |   00000000:5F:00.0 Off |                    0 |
+| N/A   45C    P0            118W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA H100 80GB HBM3          On  |   00000000:CB:00.0 Off |                    0 |
+| N/A   44C    P0            116W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA H100 80GB HBM3          On  |   00000000:DB:00.0 Off |                    0 |
+| N/A   46C    P0            112W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
