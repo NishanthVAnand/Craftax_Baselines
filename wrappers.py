@@ -220,7 +220,7 @@ class RewardWrapper(GymnaxWrapper):
             (env_state.achievements[self.all_rewards]).astype(jnp.float32) - init_achievement
         ).sum()
         reward = health_reward + achievement_reward
-        # achievement_done = env_state.achievements[self.achievement]
+        # achievement_done = jnp.squeeze(env_state.achievements[self.achievement])
         # achievement_reward = achievement_done.astype(jnp.float32)
         # base_reward = jax.lax.cond(
         #     self.basic_rewards.size > 0,
@@ -229,7 +229,7 @@ class RewardWrapper(GymnaxWrapper):
         #     operand=None,
         # )
         # reward = achievement_reward + health_reward + base_reward
-        # done = jnp.logical_or(done_old, achievement_done)
+        # done = jnp.logical_or(done, achievement_done)
         return obs, env_state, reward, done, info
 
     @partial(jax.jit, static_argnums=(0,))
