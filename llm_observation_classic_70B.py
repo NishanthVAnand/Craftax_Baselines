@@ -52,8 +52,6 @@ llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gp
 # with torch.no_grad():
 #     llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(embedding_dim)
 
-llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
-
 emb_dict_map = {0: "mean", 1: "exp", 2: "last-10", 3: "last-k", 4: "eq-k", 5: "max", 6: "geom-k"}
 
 
