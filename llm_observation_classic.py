@@ -15,42 +15,42 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 num_gpus = torch.cuda.device_count()
 local_dir = "/home/s/saminur/scratch/huggingface/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/"
 
-llm_pretrained_all = [
-    CustomLlamaForCausalLM.from_pretrained(
+tokenizer = AutoTokenizer.from_pretrained(local_dir)
+if tokenizer.pad_token is None:
+    tokenizer.add_special_tokens({"pad_token": "<pad>"})
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
+
+
+def load_model(i):
+    return CustomLlamaForCausalLM.from_pretrained(
         local_dir,
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
         device_map={"": i},
     ).eval()
-    for i in range(1, num_gpus)
-]
-tokenizer = AutoTokenizer.from_pretrained(local_dir)
 
-for llm_pretrained in llm_pretrained_all:
-    if tokenizer.pad_token is None:
-        tokenizer.add_special_tokens({"pad_token": "<pad>"})
-    # llm_pretrained.resize_token_embeddings(len(tokenizer), mean_resizing=False)
-    # embedding_dim = llm_pretrained.get_input_embeddings().weight.shape[1]
-    # padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.pad_token_id = tokenizer.eos_token_id
 
-# for llm_pretrained in llm_pretrained_all:
-#     if tokenizer.pad_token is None:
-#         tokenizer.add_special_tokens({"pad_token": "<pad>"})
-#     llm_pretrained.resize_token_embeddings(len(tokenizer), mean_resizing=False)
-#     embedding_dim = llm_pretrained.get_input_embeddings().weight.shape[1]
-#     padding_token_id = tokenizer.convert_tokens_to_ids("<pad>")
-
-#     with torch.no_grad():
-#         llm_pretrained.get_input_embeddings().weight[padding_token_id] = torch.zeros(embedding_dim)
+with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
+    llm_pretrained_all = [executor.submit(load_model, i) for i in range(num_gpus - 1)]
+llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
 emb_dict_map = {0: "mean", 1: "exp", 2: "last-10", 3: "last-k", 4: "eq-k", 5: "max", 6: "geom-k"}
 
 
-def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split):
+def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split, obs_type):
+    if obs_type == 5:
+        model_output = llm_pretrained_all[i].generate(
+            **text_obs_chunk, cache_implementation="static", max_length=1000
+        )
+        model_output_text = tokenizer.decode(model_output[0], skip_special_tokens=True)
+        text_obs_chunk = [
+            text_chunk + model_chunk
+            for text_chunk, model_chunk in zip(text_obs_chunk, model_output_text)
+        ]
+
     with torch.no_grad():
         batch_tokens = tokenizer(
             text_obs_chunk,
@@ -89,12 +89,17 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
         curr_text = "\n".join(curr_text_list)
         text_obs.append(curr_text)
 
+    if obs_type == 4:
+        text_obs = get_obs_type_4_description(text_obs)
+
     text_obs_chunks = [text_obs[i :: num_gpus - 1] for i in range(num_gpus - 1)]
 
     embed = []
     with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
         futures = [
-            executor.submit(gpu_inference, i, text_obs_chunks[i], layer, emb_type, decay, eq_split)
+            executor.submit(
+                gpu_inference, i, text_obs_chunks[i], layer, emb_type, decay, eq_split, obs_type
+            )
             for i in range(num_gpus - 1)
         ]
         for future in futures:

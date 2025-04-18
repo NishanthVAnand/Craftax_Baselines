@@ -69,7 +69,7 @@ all_block_types = np.array(
         "RIPE_PLANT",
     ]
 )
-all_mob_types = np.array(["", "CRAVOX", "COW", "SKELETON", "ARROW"])
+all_mob_types = np.array(["", "ZOMBIE", "COW", "SKELETON", "ARROW"])
 
 Block_id_to_text = {
     0: "INVALID",
@@ -93,7 +93,7 @@ Block_id_to_text = {
 
 mob_id_to_text = {
     0: "",
-    1: "CRAVOX",
+    1: "ZOMBIE",
     2: "COW",
     3: "SKELETON",
     4: "ARROW",
@@ -188,6 +188,8 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     obs_type: 0 for nearest only
     obs_type: 1 for all
     obs_type: 2 for map view
+    obs_type: 3 for map view with neutral names
+    obs_type: 4 for map view with detailed description on where the agent can reach in N steps
     obs_only: False then intrisincs and inventory are included
     obs_only: True then only observation is included
     """
@@ -200,9 +202,10 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     # meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, food, drink, and energy). "
     # meta_prompt += "Maintaining high levels are important for the agent to stay alive. "
     # meta_prompt += "You will also receive the brightness level of the environment indicating the time of the day. "
-    meta_prompt += "Your task is to interpret and remember the details of this observation.\n"
-    # meta_prompt += "The agent will then use this information to complete the following achievements: "
-    # meta_prompt += ", ".join(ACHIEVEMENTS) + ". "
+    meta_prompt += "Your task is to interpret this observation, store important features that is helpful to the agent, "
+    meta_prompt += "and come up with a strategy to help the agent achieve its accomplishments \n"
+    meta_prompt += "The agent has the below list of achievements to complete: "
+    meta_prompt += ", ".join(ACHIEVEMENTS) + ". "
     text_description.append(meta_prompt)
 
     rows = np.arange(OBS_DIM[0])[:, None]
@@ -218,17 +221,29 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         [np.zeros((OBS_DIM[0], OBS_DIM[1], 1)), symbolic_array_map_mobs], axis=-1
     )
 
-    if obs_type == 2:
+    if obs_type in [2, 4, 5]:
         block_description = "There are a total of 16 different types of blocks: "
-        block_description += ", ".join(all_block_types)
+        block_description += ", ".join(all_block_types[1:])
         text_description.append(block_description)
 
         mob_description = "There are a total of 4 different types of mobile objects: "
-        mob_description += ", ".join(all_mob_types)
+        mob_description += ", ".join(all_mob_types[1:])
         text_description.append(mob_description)
 
+        dependency_text = (
+            "The dependency chart is as follows: Trees -> Wood -> Crafting table -> Wooden tools. "
+        )
+        dependency_text += "Wooden pickaxe -> Stone -> Stone tools and Furnace. "
+        dependency_text += "Furnace + Coal -> Smelt iron -> Iron tools. "
+        dependency_text += "Iron pickaxe -> Diamonds. "
+        dependency_text += "Parallel loops: "
+        dependency_text += "Farming (Plant -> Ripe_Plant -> Eat). "
+        dependency_text += "Food Cow and Drink. "
+        dependency_text += "Combat achievements (zombie, skeleton). "
+        text_description.append(dependency_text)
+
         grid_description = "Below is the observation that is visible to the agent. "
-        grid_description += "This is a 7×7 grid, where each cell describes a combination of block type and a mobile object type (if present). "
+        grid_description += "This is a 9×7 grid, where each cell describes a combination of block type and a mobile object type (if present). "
         grid_description += "The map is organized in rows and columns, and each cell contains a string in the format: <block type> and <mobile object type>. "
         grid_description += (
             "The grid is ordered row by row, from top to bottom, and from left to right. "
@@ -252,7 +267,13 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
             ),
             block_types_str,
         )
+
         text_description.append("\n".join(["@ " + " | ".join(row) + " @" for row in both_types]))
+
+        if obs_type == 4:
+            text_description.append(
+                get_obs_type_4_description(block_types_str, mob_types_str, distance_matrix)
+            )
 
     elif obs_type == 3:
         block_description = "There are a total of 16 different types of blocks: "
@@ -264,7 +285,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         text_description.append(mob_description)
 
         grid_description = "Below is the observation that is visible to the agent. "
-        grid_description += "This is a 7×7 grid, where each cell describes a combination of block type and a mobile object type (if present). "
+        grid_description += "This is a 7x9 grid, where each cell describes a combination of block type and a mobile object type (if present). "
         grid_description += "The map is organized in rows and columns, and each cell contains a string in the format: <block type> and <mobile object type>. "
         grid_description += (
             "The grid is ordered row by row, from top to bottom, and from left to right. "
@@ -288,6 +309,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
             ),
             block_types_str,
         )
+
         text_description.append("\n".join(["@ " + " | ".join(row) + " @" for row in both_types]))
 
     else:
@@ -361,6 +383,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
 
     if obs_only:
         return text_description
+
     inventory = np.round((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
     inventory_description = (
         "The agent can store a total of 12 different types of items in its inventory: "
@@ -420,3 +443,52 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         text_description.append("The agent is awake.")
 
     return text_description
+
+
+resources_list = ["WATER", "STONE", "TREE", "WOOD", "PLANT", "RIPE_PLANT", "COW"]
+hazard_list = ["LAVA", "ZOMBIE", "SKELETON"]
+mineral_list = ["COAL", "IRON", "DIAMOND"]
+tool_maker_list = ["CRAFTING_TABLE", "FURNACE"]
+
+
+def get_obs_type_4_description(block_types_str, mob_types_str, distance_matrix):
+    nearest_distances = [1, 2, 3]
+    additional_text = "Based on the observation provided, below are the details "
+    additional_text += "of the nearest resources, minerals, hazards, and tool makers: \n"
+    for distance in reversed(nearest_distances):
+        curr_blocks = block_types_str[distance_matrix == distance]
+        curr_mobs = mob_types_str[distance_matrix == distance]
+
+        unique_blocks = np.unique(curr_blocks)
+        unique_mobs = np.unique(curr_mobs)
+
+        unique_all = np.concatenate((unique_blocks, unique_mobs))
+
+        additional_text += "At distance " + str(distance) + ", "
+
+        curr_resources = np.intersect1d(unique_all, resources_list)
+        if len(curr_resources) > 0:
+            additional_text += "Resources are: " + ", ".join(curr_resources) + ". "
+        else:
+            additional_text += "No resources found. "
+
+        curr_hazards = np.intersect1d(unique_all, hazard_list)
+        if len(curr_hazards) > 0:
+            additional_text += "Hazards are: " + ", ".join(curr_hazards) + ". "
+        else:
+            additional_text += "No hazards found. "
+
+        curr_tool_makers = np.intersect1d(unique_all, tool_maker_list)
+        if len(curr_tool_makers) > 0:
+            additional_text += "Tool makers are: " + ", ".join(curr_tool_makers) + ". "
+        else:
+            additional_text += "No tool makers found. "
+
+        curr_minerals = np.intersect1d(unique_all, mineral_list)
+        if len(curr_minerals) > 0:
+            additional_text += "Minerals are: " + ", ".join(curr_minerals) + ". "
+        else:
+            additional_text += "No minerals found. "
+
+    additional_text += "This information can help the agent make decisions about its next actions."
+    return additional_text
