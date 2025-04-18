@@ -38,7 +38,7 @@ def load_model(i):
 
 
 with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
-    llm_pretrained_all = [executor.submit(load_model, i) for i in range(num_gpus - 1)]
+    llm_pretrained_all = [executor.submit(load_model, i).result() for i in range(num_gpus - 1)]
 llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
 # for llm_pretrained in llm_pretrained_all:
