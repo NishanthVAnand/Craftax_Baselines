@@ -206,6 +206,9 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     meta_prompt += "and come up with a strategy to help the agent achieve its accomplishments \n"
     meta_prompt += "The agent has the below list of achievements to complete: "
     meta_prompt += ", ".join(ACHIEVEMENTS) + ". "
+    if obs_type == 6:
+        meta_prompt = ""
+
     text_description.append(meta_prompt)
 
     rows = np.arange(OBS_DIM[0])[:, None]
@@ -312,6 +315,68 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
 
         text_description.append("\n".join(["@ " + " | ".join(row) + " @" for row in both_types]))
 
+    elif obs_type == 6:
+        block_types = np.argmax(symbolic_array_map_blocks, axis=-1)
+        mob_types = np.argmax(symbolic_array_map_mobs, axis=-1)
+
+        block_types_str = all_block_types[block_types]
+        block_types_str[OBS_DIM[0] // 2, OBS_DIM[1] // 2] = "Me"
+        mob_types_str = all_mob_types[mob_types]
+
+        both_types = np.where(
+            mob_types_str != "",
+            np.char.add(
+                np.char.add(block_types_str.astype(str), " and "), mob_types_str.astype(str)
+            ),
+            block_types_str,
+        )
+
+        text_description.append("""I am an intelligent agent exploring the world of Crafter — a procedurally generated open-ended survival game.
+It is a 2D tile-based environment with nearby tiles visible to me.
+My task is to interpret my surroundings, remember what’s important, and plan how to achieve my goals.""")
+
+        text_description.append("Here are the achievements I am trying to complete: " + ", ".join(ACHIEVEMENTS) + ".")
+
+        text_description.append("""There are a total of 16 different types of blocks: OUT_OF_BOUNDS, GRASS, WATER, STONE, TREE, WOOD, PATH, COAL, IRON, DIAMOND, CRAFTING_TABLE, FURNACE, SAND, LAVA, PLANT, RIPE_PLANT.
+There are a total of 4 different types of mobile objects: ZOMBIE, COW, SKELETON, ARROW.""")
+
+        text_description.append("""The dependency chart is as follows:
+Trees → Wood → Crafting table → Wooden tools.
+Wooden pickaxe → Stone → Stone tools and Furnace.
+Furnace + Coal → Smelt iron → Iron tools.
+Iron pickaxe → Diamonds.
+Parallel loops: Farming (Plant → Ripe_Plant → Eat), Food (Cow), and Drink.
+Combat achievements involve defeating zombies and skeletons.""")
+
+        text_description.append("""This is a 9×7 grid, where each cell describes a combination of block type and a mobile object type (if present).
+The grid is organized row by row, from top to bottom, and from left to right.
+Each cell has the format: <block type> and <mobile object type>, and the rows are separated by @.""")
+
+        text_description.append("\n".join(["@ " + " | ".join(row) + " @" for row in both_types]))
+
+        text_description.append(
+            get_obs_type_6_description(block_types_str, mob_types_str, distance_matrix)
+        )
+
+        text_description.append("""Here are the actions I can perform and what I need for each:
+
+MoveLeft — Flat ground to the left of me.
+MoveRight — Flat ground to the right of me.
+MoveUp — Flat ground above me.
+MoveDown — Flat ground below me.
+Do — I must be facing a creature or material and have the necessary tool.
+Sleep — My energy level must be below maximum.
+PlaceStone — I must have stone in my inventory.
+PlaceTable — I must have wood in my inventory.
+PlaceFurnace — I must have stone in my inventory.
+PlacePlant — I must have a sapling in my inventory.
+MakeWoodPickaxe — A nearby crafting table and wood in my inventory.
+MakeStonePickaxe — A nearby crafting table and both wood and stone in my inventory.
+MakeIronPickaxe — A nearby crafting table and furnace, and I need wood, coal, and iron in my inventory.
+MakeWoodSword — A nearby crafting table and wood in my inventory.
+MakeStoneSword — A nearby crafting table and both wood and stone in my inventory.
+MakeIronSword — A nearby crafting table and furnace, and I need wood, coal, and iron in my inventory.""")
+
     else:
         # Block types description
         if symbolic_array_map_blocks.sum() > 0:
@@ -382,6 +447,8 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     )
 
     if obs_only:
+        if obs_type == 6:
+            text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
         return text_description
 
     inventory = np.round((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
@@ -442,6 +509,10 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     else:
         text_description.append("The agent is awake.")
 
+
+    if obs_type == 6:
+        text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
+
     return text_description
 
 
@@ -492,3 +563,46 @@ def get_obs_type_4_description(block_types_str, mob_types_str, distance_matrix):
 
     additional_text += "This information can help the agent make decisions about its next actions."
     return additional_text
+
+
+def get_obs_type_6_description(block_types_str, mob_types_str, distance_matrix):
+    nearest_distances = [1, 2, 3]
+    additional_text = """Based on what I can see around me, here are the closest resources, hazards, tool-making stations, and minerals:\n"""
+    for distance in reversed(nearest_distances):
+        curr_blocks = block_types_str[distance_matrix == distance]
+        curr_mobs = mob_types_str[distance_matrix == distance]
+
+        unique_blocks = np.unique(curr_blocks)
+        unique_mobs = np.unique(curr_mobs)
+
+        unique_all = np.concatenate((unique_blocks, unique_mobs))
+
+        additional_text += f"At distance {distance}, "
+
+        curr_resources = np.intersect1d(unique_all, resources_list)
+        if len(curr_resources) > 0:
+            additional_text += "I see resources like: " + ", ".join(curr_resources) + ". "
+        else:
+            additional_text += "I don't see any resources. "
+
+        curr_hazards = np.intersect1d(unique_all, hazard_list)
+        if len(curr_hazards) > 0:
+            additional_text += "Hazards nearby: " + ", ".join(curr_hazards) + ". "
+        else:
+            additional_text += "No hazards spotted. "
+
+        curr_tool_makers = np.intersect1d(unique_all, tool_maker_list)
+        if len(curr_tool_makers) > 0:
+            additional_text += "Tool-making stations: " + ", ".join(curr_tool_makers) + ". "
+        else:
+            additional_text += "No tool makers here. "
+
+        curr_minerals = np.intersect1d(unique_all, mineral_list)
+        if len(curr_minerals) > 0:
+            additional_text += "Minerals nearby: " + ", ".join(curr_minerals) + ". "
+        else:
+            additional_text += "No minerals here. "
+
+    additional_text += "\nThis helps me decide what to do next."
+    return additional_text
+
