@@ -31,11 +31,13 @@ def load_model(i):
     ).eval()
 
 
-with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
-    llm_pretrained_all = [executor.submit(load_model, i) for i in range(num_gpus - 1)]
-llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
+# with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
+#     llm_pretrained_all = [executor.submit(load_model, i) for i in range(num_gpus - 1)]
+# llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
-llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
+# llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
+
+llm_pretrained_all = [torch.compile(load_model(i)) for i in range(1, num_gpus)]
 
 emb_dict_map = {0: "mean", 1: "exp", 2: "last-10", 3: "last-k", 4: "eq-k", 5: "max", 6: "geom-k"}
 
