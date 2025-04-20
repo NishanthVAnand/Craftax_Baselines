@@ -233,17 +233,17 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=0):
         mob_description += ", ".join(all_mob_types[1:])
         text_description.append(mob_description)
 
-        dependency_text = (
-            "The dependency chart is as follows: Trees -> Wood -> Crafting table -> Wooden tools. "
-        )
-        dependency_text += "Wooden pickaxe -> Stone -> Stone tools and Furnace. "
-        dependency_text += "Furnace + Coal -> Smelt iron -> Iron tools. "
-        dependency_text += "Iron pickaxe -> Diamonds. "
-        dependency_text += "Parallel loops: "
-        dependency_text += "Farming (Plant -> Ripe_Plant -> Eat). "
-        dependency_text += "Food Cow and Drink. "
-        dependency_text += "Combat achievements (zombie, skeleton). "
-        text_description.append(dependency_text)
+        # dependency_text = (
+        #     "The dependency chart is as follows: Trees -> Wood -> Crafting table -> Wooden tools. "
+        # )
+        # dependency_text += "Wooden pickaxe -> Stone -> Stone tools and Furnace. "
+        # dependency_text += "Furnace + Coal -> Smelt iron -> Iron tools. "
+        # dependency_text += "Iron pickaxe -> Diamonds. "
+        # dependency_text += "Parallel loops: "
+        # dependency_text += "Farming (Plant -> Ripe_Plant -> Eat). "
+        # dependency_text += "Food Cow and Drink. "
+        # dependency_text += "Combat achievements (zombie, skeleton). "
+        # text_description.append(dependency_text)
 
         grid_description = "Below is the observation that is visible to the agent. "
         grid_description += "This is a 9×7 grid, where each cell describes a combination of block type and a mobile object type (if present). "
@@ -340,13 +340,13 @@ My task is to interpret my surroundings, remember what’s important, and plan h
         text_description.append("""There are a total of 16 different types of blocks: OUT_OF_BOUNDS, GRASS, WATER, STONE, TREE, WOOD, PATH, COAL, IRON, DIAMOND, CRAFTING_TABLE, FURNACE, SAND, LAVA, PLANT, RIPE_PLANT.
 There are a total of 4 different types of mobile objects: ZOMBIE, COW, SKELETON, ARROW.""")
 
-        text_description.append("""The dependency chart is as follows:
-Trees → Wood → Crafting table → Wooden tools.
-Wooden pickaxe → Stone → Stone tools and Furnace.
-Furnace + Coal → Smelt iron → Iron tools.
-Iron pickaxe → Diamonds.
-Parallel loops: Farming (Plant → Ripe_Plant → Eat), Food (Cow), and Drink.
-Combat achievements involve defeating zombies and skeletons.""")
+#         text_description.append("""The dependency chart is as follows:
+# Trees → Wood → Crafting table → Wooden tools.
+# Wooden pickaxe → Stone → Stone tools and Furnace.
+# Furnace + Coal → Smelt iron → Iron tools.
+# Iron pickaxe → Diamonds.
+# Parallel loops: Farming (Plant → Ripe_Plant → Eat), Food (Cow), and Drink.
+# Combat achievements involve defeating zombies and skeletons.""")
 
         text_description.append("""This is a 9×7 grid, where each cell describes a combination of block type and a mobile object type (if present).
 The grid is organized row by row, from top to bottom, and from left to right.
