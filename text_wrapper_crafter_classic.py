@@ -183,7 +183,7 @@ distance_lookup = generate_distance_dict(
 )  # precompute all possible movement descriptions within a given range
 
 
-def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
+def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=0):
     """
     obs_type: 0 for nearest only
     obs_type: 1 for all

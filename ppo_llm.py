@@ -61,7 +61,7 @@ def make_train(config):
 
     env = make_craftax_env_from_name(config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"])
     env_params = env.default_params
-    if config["ACHIEVEMENT"] is not None:
+    if config["ACHIEVEMENT"] != "FULL":
         from rewards import get_basic_rewards
 
         env = RewardWrapper(env, config["ACHIEVEMENT"], get_basic_rewards(config["ACHIEVEMENT"]))
@@ -741,14 +741,24 @@ if __name__ == "__main__":
     elif args.model == 1:
         hidden_size = 8192
 
+
+    if args.obs_only == 0:
+        concat_size = 0
+    elif args.obs_only == 1:
+        concat_size = 22
+    elif args.obs_only == 2:
+        concat_size = 1345
+    else:
+        raise ValueError(f"Args.obs_only {args.obs_only} not known")
+
     emb_dict_map = {
-        0: hidden_size * len(args.layer) + args.obs_only * 22,
-        1: hidden_size * len(args.layer) + args.obs_only * 22,
-        2: hidden_size * len(args.layer) + args.obs_only * 22,
-        3: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
-        4: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
-        5: hidden_size * len(args.layer) + args.obs_only * 22,
-        6: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
+        0: hidden_size * len(args.layer) + concat_size,
+        1: hidden_size * len(args.layer) + concat_size,
+        2: hidden_size * len(args.layer) + concat_size,
+        3: hidden_size * int(args.eq_split) * len(args.layer) + concat_size,
+        4: hidden_size * int(args.eq_split) * len(args.layer) + concat_size,
+        5: hidden_size * len(args.layer) + concat_size,
+        6: hidden_size * int(args.eq_split) * len(args.layer) + concat_size,
     }
     args.num_params = emb_dict_map[int(args.emb_type)]
 
