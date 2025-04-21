@@ -123,7 +123,7 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_
     numpy_embed = np.concatenate(embed, axis=0)
 
     if obs_only:
-        numpy_embed = np.concatenate([numpy_embed, obs[:, 1323:]], axis=1)
+        numpy_embed = np.concatenate([numpy_embed, obs[:, -22:]], axis=1)
 
     torch.cuda.empty_cache()
 
