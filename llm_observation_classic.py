@@ -31,11 +31,11 @@ def load_model(i):
     ).eval()
 
 
-with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
-    llm_pretrained_all = [executor.submit(load_model, i) for i in range(num_gpus - 1)]
-llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
+# with ThreadPoolExecutor(max_workers=num_gpus - 1) as executor:
+#     llm_pretrained_all = [executor.submit(load_model, i) for i in range(num_gpus - 1)]
+# llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
 
-llm_pretrained_all = [torch.compile(llm_pretrained_all[i]) for i in range(num_gpus - 1)]
+llm_pretrained_all = [torch.compile(load_model(i)) for i in range(1, num_gpus)]
 
 emb_dict_map = {0: "mean", 1: "exp", 2: "last-10", 3: "last-k", 4: "eq-k", 5: "max", 6: "geom-k"}
 
@@ -72,7 +72,7 @@ def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split, obs_type)
     return hidden_states
 
 
-def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
+def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_size):
     obs = np.array(obs)
     layer = [int(lay) for lay in layer]
     emb_type = int(emb_type)
@@ -80,11 +80,12 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
     eq_split = int(eq_split)
     obs_type = int(obs_type)
     obs_only = int(obs_only)
+    crop_size = int(crop_size)
 
     text_obs = []
     for curr_obs in obs:
         curr_text_list = symbolic_to_text_numpy(
-            symbolic_array=curr_obs, obs_type=obs_type, obs_only=obs_only
+            symbolic_array=curr_obs, obs_type=obs_type, obs_only=obs_only, crop_size=crop_size
         )
         curr_text = "\n".join(curr_text_list)
         text_obs.append(curr_text)

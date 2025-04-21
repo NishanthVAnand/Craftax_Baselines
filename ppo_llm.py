@@ -36,6 +36,7 @@ from wrappers import (
     BatchEnvWrapper,
     AutoResetEnvWrapper,
     RewardWrapper,
+    ObsCropWrapper,
 )
 
 # Code adapted from the original implementation made by Chris Lu
@@ -61,6 +62,8 @@ def make_train(config):
 
     env = make_craftax_env_from_name(config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"])
     env_params = env.default_params
+    if config["CROP_SIZE"] > 0:
+        env = ObsCropWrapper(env, config["CROP_SIZE"])
     if config["ACHIEVEMENT"] != "FULL":
         from rewards import get_basic_rewards
 
@@ -142,6 +145,7 @@ def make_train(config):
                 config["EQ_SPLIT"],
                 config["OBS_TYPE"],
                 config["OBS_ONLY"],
+                config["CROP_SIZE"],
             )
             obs_shape = obs_llm.shape[0]
 
@@ -230,6 +234,7 @@ def make_train(config):
             config["EQ_SPLIT"],
             config["OBS_TYPE"],
             config["OBS_ONLY"],
+            config["CROP_SIZE"],
         )
 
         # TRAIN LOOP
@@ -269,6 +274,7 @@ def make_train(config):
                     config["EQ_SPLIT"],
                     config["OBS_TYPE"],
                     config["OBS_ONLY"],
+                    config["CROP_SIZE"],
                 )
 
                 reward_i = jnp.zeros(config["NUM_ENVS"])
@@ -677,6 +683,7 @@ if __name__ == "__main__":
         type=int,
         default=1024,
     )
+    parser.add_argument("--crop_size", type=int, default=5)
     parser.add_argument("--achievement", type=str, default="PLACE_TABLE")
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=1e9

@@ -8,6 +8,8 @@ from typing import Optional, Tuple, Union, Any
 
 from craftax.craftax_classic.constants import *
 from craftax.craftax_classic.envs.common import compute_score
+from gymnax.environments import spaces
+from craftax.craftax_classic.envs.craftax_symbolic_env import *
 
 
 class GymnaxWrapper(object):
@@ -236,3 +238,49 @@ class RewardWrapper(GymnaxWrapper):
     def get_basic_rew(self, state, env_state):
         init_basic = state.achievements[self.basic_rewards].astype(jnp.float32)
         return ((env_state.achievements[self.basic_rewards]).astype(jnp.float32) - init_basic).sum()
+
+
+class ObsCropWrapper(GymnaxWrapper):
+    """Crops the observation to a smaller size."""
+
+    def __init__(self, env, crop_size: int = 5):
+        super().__init__(env)
+        self.crop_size = crop_size
+
+    def observation_space(self, params: EnvParams) -> spaces.Box:
+        return spaces.Box(
+            low=0.0,
+            high=1.0,
+            shape=(self.crop_size**2 * (len(BlockType) + 4) + get_inventory_obs_shape(),),
+            dtype=jnp.float32,
+        )
+
+    @partial(jax.jit, static_argnums=(0))
+    def crop(self, obs):
+        symbolic_array_map = obs[:1323]
+        symbolic_array_map_reshaped = symbolic_array_map.reshape(OBS_DIM[0], OBS_DIM[1], -1)
+        new_obs = symbolic_array_map_reshaped[
+            OBS_DIM[0] // 2 - self.crop_size // 2 : OBS_DIM[0] // 2 + self.crop_size // 2 + 1,
+            OBS_DIM[1] // 2 - self.crop_size // 2 : OBS_DIM[1] // 2 + self.crop_size // 2 + 1,
+            :,
+        ]
+        new_obs = jnp.concatenate([jnp.reshape(new_obs, (-1,)), obs[1323:]], axis=0)
+        return new_obs
+
+    @partial(jax.jit, static_argnums=(0, 2))
+    def reset(self, key: chex.PRNGKey, params=None):
+        obs, env_state = self._env.reset(key, params)
+        obs = self.crop(obs)
+        return obs, env_state
+
+    @partial(jax.jit, static_argnums=(0, 4))
+    def step(
+        self,
+        key: chex.PRNGKey,
+        state,
+        action: Union[int, float],
+        params=None,
+    ):
+        obs, env_state, reward, done, info = self._env.step(key, state, action, params)
+        obs = self.crop(obs)
+        return obs, env_state, reward, done, info

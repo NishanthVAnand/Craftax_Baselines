@@ -122,12 +122,6 @@ Intrinsic_Items = [
 ]
 
 Direction = ["Left", "Right", "Up", "Down"]
-Direction_to_obj = {
-    0: (OBS_DIM[0] // 2, OBS_DIM[1] // 2 - 1),
-    1: (OBS_DIM[0] // 2, OBS_DIM[1] // 2 + 1),
-    2: (OBS_DIM[0] // 2 - 1, OBS_DIM[1] // 2),
-    3: (OBS_DIM[0] // 2 + 1, OBS_DIM[1] // 2),
-}
 
 ACHIEVEMENTS = [
     "Collect Wood",
@@ -183,7 +177,7 @@ distance_lookup = generate_distance_dict(
 )  # precompute all possible movement descriptions within a given range
 
 
-def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
+def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=0, crop_size=0):
     """
     obs_type: 0 for nearest only
     obs_type: 1 for all
@@ -208,13 +202,28 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     meta_prompt += ", ".join(ACHIEVEMENTS) + ". "
     text_description.append(meta_prompt)
 
+    if crop_size > 0:
+        OBS_DIM = (crop_size, crop_size)
+    else:
+        OBS_DIM = (7, 9)
+
+    Direction_to_obj = {
+        0: (OBS_DIM[0] // 2, OBS_DIM[1] // 2 - 1),
+        1: (OBS_DIM[0] // 2, OBS_DIM[1] // 2 + 1),
+        2: (OBS_DIM[0] // 2 - 1, OBS_DIM[1] // 2),
+        3: (OBS_DIM[0] // 2 + 1, OBS_DIM[1] // 2),
+    }
+
     rows = np.arange(OBS_DIM[0])[:, None]
     cols = np.arange(OBS_DIM[1])[None, :]
     distance_matrix = np.abs(rows - (OBS_DIM[0] - 1) // 2) + np.abs(cols - (OBS_DIM[1] - 1) // 2)
     max_distance = 100  # max distance to get rid of zeros
 
-    symbolic_array_map = symbolic_array[:1323]
-    symbolic_array_map_reshaped = symbolic_array_map.reshape(OBS_DIM[0], OBS_DIM[1], -1)
+    symbolic_array_map = symbolic_array[:-22]
+    if crop_size > 0:
+        symbolic_array_map_reshaped = symbolic_array_map.reshape(OBS_DIM[0], OBS_DIM[1], -1)
+    else:
+        symbolic_array_map_reshaped = symbolic_array_map.reshape(OBS_DIM[0], OBS_DIM[1], -1)
     symbolic_array_map_blocks = symbolic_array_map_reshaped[:, :, :17]
     symbolic_array_map_mobs = symbolic_array_map_reshaped[:, :, 17:21]
     symbolic_array_map_mobs = np.concatenate(
@@ -243,7 +252,9 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
         text_description.append(dependency_text)
 
         grid_description = "Below is the observation that is visible to the agent. "
-        grid_description += "This is a 9×7 grid, where each cell describes a combination of block type and a mobile object type (if present). "
+        grid_description += "This is a {}x{} grid, where each cell describes a combination of block type and a mobile object type (if present). ".format(
+            OBS_DIM[0], OBS_DIM[1]
+        )
         grid_description += "The map is organized in rows and columns, and each cell contains a string in the format: <block type> and <mobile object type>. "
         grid_description += (
             "The grid is ordered row by row, from top to bottom, and from left to right. "
@@ -368,7 +379,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
                 text_description.append(mob_id_to_text[mob] + " is at: " + ", ".join(descriptions))
 
     # Direction
-    direction_array = symbolic_array[1339:1343]
+    direction_array = symbolic_array[-6:-2]
     # text_description.append(
     #     "The agent is facing " + Direction[np.argwhere(direction_array == 1).item()]
     # )
@@ -384,7 +395,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
     if obs_only:
         return text_description
 
-    inventory = np.round((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
+    inventory = np.round((symbolic_array[-22:-10] * 10) ** 2).astype(np.int64)
     inventory_description = (
         "The agent can store a total of 12 different types of items in its inventory: "
     )
@@ -414,7 +425,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
                     "The agent has " + str(item_count) + " units of " + Inventory_Items[inv_idx]
                 )
 
-    intrinsic_array = symbolic_array[1335:1339]
+    intrinsic_array = symbolic_array[-10:-6]
     text_description.append(
         "Below are the intrinsic values of the agent that describes its condition. Maintaining high levels are important for the agent to stay alive."
     )
@@ -433,11 +444,11 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=False):
 
     text_description.append(
         "The brightness level of the environment indicates the time of the day. The brightness level is "
-        + str(np.around(symbolic_array[1343] * 100, 2))
+        + str(np.around(symbolic_array[-2] * 100, 2))
         + "%."
     )
 
-    if symbolic_array[1344] == 1:
+    if symbolic_array[-1] == 1:
         text_description.append("The agent is sleeping.")
     else:
         text_description.append("The agent is awake.")
