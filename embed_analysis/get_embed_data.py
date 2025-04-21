@@ -1,3 +1,6 @@
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
 from craftax.craftax_classic.constants import *
 import numpy as np
 
@@ -74,22 +77,25 @@ achievement = "WAKE_UP"
 env = RewardWrapper(env, achievement, get_basic_rewards(achievement))
 env = LogWrapper(env)
 env = OptimisticResetVecEnvWrapper(
-            env,
-            num_envs=num_envs,
-            reset_ratio=min(4, num_envs),
-        )
+    env,
+    num_envs=num_envs,
+    reset_ratio=min(4, num_envs),
+)
 
 rng = jax.random.PRNGKey(0)
 
 rng, reset_rng = jax.random.split(rng)
 obsvv, env_state = env.reset(reset_rng, env_params)
 
-for i in range(10):
+embeddings = []
+raw_obs = []
+for i in range(128):
     rng, rng_a, _rng = jax.random.split(rng, 3)
     action = jax.random.randint(rng_a, shape=(num_envs, ), minval=0, maxval=17)
     obsvv, env_state, reward_e, done, info = env.step(
-                    _rng, env_state, action, env_params
-                )
+        _rng, env_state, action, env_params
+    )
+    raw_obs.append(np.array(obsvv[0]))
     return_dtype = jax.ShapeDtypeStruct(
         (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
     obsv = jax.pure_callback(
@@ -102,5 +108,90 @@ for i in range(10):
         config["EQ_SPLIT"],
         config["OBS_TYPE"],
         config["OBS_ONLY"],)
+
+    embeddings.append(np.array(obsv[0]))
     if done[0]:
         break
+
+# embeddings = jnp.concatenate(embeddings, axis=0)
+raw_obs = jnp.concatenate(raw_obs, axis=0)
+
+emb_np = np.array(embeddings)
+raw_obs_np = np.array(raw_obs)
+
+sim_matrix = cosine_similarity(emb_np)  # shape: (N, N)
+
+# Plot and save the similarity heatmap
+plt.figure(figsize=(8, 6))
+plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
+plt.title("Cosine Similarity Matrix")
+plt.xlabel("Timestep")
+plt.ylabel("Timestep")
+plt.colorbar(label="Cosine Similarity")
+plt.tight_layout()
+plt.savefig("similarity_matrix_emb.png", dpi=300)
+plt.close()
+
+
+
+sim_matrix = cosine_similarity(emb_np)  # shape: (N, N)
+
+# Plot and save the similarity heatmap
+plt.figure(figsize=(8, 6))
+plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
+plt.title("Cosine Similarity Matrix")
+plt.xlabel("Timestep")
+plt.ylabel("Timestep")
+plt.colorbar(label="Cosine Similarity")
+plt.tight_layout()
+plt.savefig("similarity_matrix_raw.png", dpi=300)
+plt.close()
+
+# pca = PCA(n_components=2)
+# emb_2d = pca.fit_transform(emb_np)
+#
+# plt.figure(figsize=(6, 5))
+# plt.scatter(emb_2d[:, 0], emb_2d[:, 1],
+#             c=np.arange(len(emb_2d)), cmap='viridis')
+# plt.title("PCA of embeddings over time")
+# plt.colorbar(label='Timestep')
+# plt.tight_layout()
+# plt.savefig("embedding_pca.png", dpi=300)
+# plt.close()
+#
+#
+# sim = cosine_similarity(emb_np[:-1], emb_np[1:])
+# step_sim = np.diag(sim)
+#
+# plt.figure(figsize=(6, 4))
+# plt.plot(step_sim)
+# plt.title("Cosine Similarity Between Consecutive Timesteps")
+# plt.xlabel("Timestep")
+# plt.ylabel("Cosine Similarity")
+# plt.tight_layout()
+# plt.savefig("embedding_cosine_similarity.png", dpi=300)
+# plt.close()
+#
+#
+# sim = cosine_similarity(raw_obs_np[:-1], raw_obs_np[1:])
+# step_sim = np.diag(sim)
+#
+# plt.figure(figsize=(6, 4))
+# plt.plot(step_sim)
+# plt.title("Cosine Similarity Between Consecutive Timesteps")
+# plt.xlabel("Timestep")
+# plt.ylabel("Cosine Similarity")
+# plt.tight_layout()
+# plt.savefig("raw_obs_cosine_similarity.png", dpi=300)
+# plt.close()
+#
+# norms = np.linalg.norm(emb_np, axis=1)
+#
+# plt.figure(figsize=(6, 4))
+# plt.plot(norms)
+# plt.title("L2 Norm of Embeddings Over Time")
+# plt.xlabel("Timestep")
+# plt.ylabel("L2 Norm")
+# plt.tight_layout()
+# plt.savefig("embedding_l2_norms.png", dpi=300)
+# plt.close()
