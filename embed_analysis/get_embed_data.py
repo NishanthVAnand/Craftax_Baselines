@@ -85,14 +85,15 @@ env = OptimisticResetVecEnvWrapper(
 
 with PdfPages('similarity_matrix_combined_all.pdf') as pdf:
 
-    for obs_type in [0, 1, 2, 3, 4, 6, 7]:
-        for embed_type in [0, 1, 2, 3, 4, 5, 6]:
+    for embed_type in [3]:
+        for obs_type in [0, 1, 2, 3, 4, 6, 7, 8]:
 
             embeddings = []
             embeddings_diff = []
             embeddings_llm_diff = []
             raw_obs = []
             raw_obs_diff = []
+            raw_obs_only = []
             config["EMB_TYPE"] = embed_type
             config["NUM_PARAMS"] = emb_dict_map[int(config["EMB_TYPE"])]
             config["OBS_TYPE"] = obs_type
@@ -122,6 +123,7 @@ with PdfPages('similarity_matrix_combined_all.pdf') as pdf:
                     _rng, env_state, action, env_params
                 )
                 raw_obs.append(np.array(obsvv[0]))
+                raw_obs_only.append(np.array(obsvv[0][:-22]))
                 raw_obs_diff.append(np.array(jnp.abs(obsvv[0] - old_obsvv[0])))
 
                 return_dtype = jax.ShapeDtypeStruct(
@@ -155,16 +157,20 @@ with PdfPages('similarity_matrix_combined_all.pdf') as pdf:
 
             emb_np = np.array(embeddings)
             raw_obs_np = np.array(raw_obs)
+            raw_obs_only_np = np.array(raw_obs_only)
             emb_np_d = np.array(embeddings_diff)
             raw_obs_np_d = np.array(raw_obs_diff)
             embeddings_llm_diff_p = np.array(embeddings_llm_diff)
+            emmbed_and_embed_diff_concat = np.concat([emb_np, emb_np_d], axis=-1)
 
             sim_matrices = {
                 "Raw": cosine_similarity(raw_obs_np),
+                "Raw Obs Only": cosine_similarity(raw_obs_only_np),
                 "Embed": cosine_similarity(emb_np),
                 "Raw diff": cosine_similarity(raw_obs_np_d),
                 "Embed diff": cosine_similarity(emb_np_d),
-                "Embed consecutive diff": cosine_similarity(embeddings_llm_diff_p)
+                "Embed consecutive diff": cosine_similarity(embeddings_llm_diff_p),
+                "Embed and Embed Diff Concat": cosine_similarity(emmbed_and_embed_diff_concat),
             }
 
             # Compute global vmin and vmax for shared color scale
@@ -172,7 +178,7 @@ with PdfPages('similarity_matrix_combined_all.pdf') as pdf:
             vmin = np.min(all_values)
             vmax = np.max(all_values)
 
-            fig, axs = plt.subplots(2, 3, figsize=(12, 10))
+            fig, axs = plt.subplots(3, 3, figsize=(12, 10))
             axs = axs.flatten()
 
             for ax, (title, sim_matrix) in zip(axs, sim_matrices.items()):
