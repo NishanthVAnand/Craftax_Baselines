@@ -63,7 +63,6 @@ emb_dict_map = {
     5: hidden_size * len(args.layer) + concat_size,
     6: hidden_size * int(args.eq_split) * len(args.layer) + concat_size,
 }
-args.num_params = emb_dict_map[int(args.emb_type)]
 
 config = vars(args)
 for key in list(config.keys()):
@@ -82,21 +81,34 @@ env = OptimisticResetVecEnvWrapper(
     reset_ratio=min(4, num_envs),
 )
 
-rng = jax.random.PRNGKey(0)
+for embed_type in [0, 1, 2, 3, 4, 5, 6]:
 
-rng, reset_rng = jax.random.split(rng)
-obsvv, env_state = env.reset(reset_rng, env_params)
-
-embeddings = []
-embeddings_diff = []
-raw_obs = []
-raw_obs_diff = []
-
-for embed_type in []:
+    embeddings = []
+    embeddings_diff = []
+    embeddings_llm_diff = []
+    raw_obs = []
+    raw_obs_diff = []
+    print(embed_type)
     config["EMB_TYPE"] = embed_type
-
+    config["NUM_PARAMS"] = emb_dict_map[int(config["EMB_TYPE"])]
+    rng = jax.random.PRNGKey(0)
+    rng, reset_rng = jax.random.split(rng)
+    obsvv, env_state = env.reset(reset_rng, env_params)
+    return_dtype = jax.ShapeDtypeStruct(
+        (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
+    obsv = jax.pure_callback(
+        get_llm_obs,
+        return_dtype,
+        obsvv,
+        config["LAYER"],
+        config["EMB_TYPE"],
+        config["DECAY"],
+        config["EQ_SPLIT"],
+        config["OBS_TYPE"],
+        config["OBS_ONLY"],)
     for i in range(128):
         old_obsvv = obsvv
+        old_obs = obsv
         rng, rng_a, _rng = jax.random.split(rng, 3)
         action = jax.random.randint(
             rng_a, shape=(num_envs, ), minval=0, maxval=17)
@@ -104,7 +116,7 @@ for embed_type in []:
             _rng, env_state, action, env_params
         )
         raw_obs.append(np.array(obsvv[0]))
-        raw_obs_diff.append(np.array(obsvv[0] - old_obsvv[0]))
+        raw_obs_diff.append(np.array(jnp.abs(obsvv[0] - old_obsvv[0])))
 
         return_dtype = jax.ShapeDtypeStruct(
             (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
@@ -133,17 +145,20 @@ for embed_type in []:
 
         embeddings.append(np.array(obsv[0]))
         embeddings_diff.append(np.array(obsv_embed_dif[0]))
+        embeddings_llm_diff.append(np.array((old_obs - obsv)[0]))
 
     emb_np = np.array(embeddings)
     raw_obs_np = np.array(raw_obs)
     emb_np_d = np.array(embeddings_diff)
     raw_obs_np_d = np.array(raw_obs_diff)
+    embeddings_llm_diff_p = np.array(embeddings_llm_diff)
 
     sim_matrices = {
         "Raw": cosine_similarity(raw_obs_np),
         "Embed": cosine_similarity(emb_np),
         "Raw diff": cosine_similarity(raw_obs_np_d),
         "Embed diff": cosine_similarity(emb_np_d),
+        "Embed consecutive diff": cosine_similarity(embeddings_llm_diff_p)
     }
 
     # Compute global vmin and vmax for shared color scale
@@ -151,7 +166,7 @@ for embed_type in []:
     vmin = np.min(all_values)
     vmax = np.max(all_values)
 
-    fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+    fig, axs = plt.subplots(2, 3, figsize=(12, 10))
     axs = axs.flatten()
 
     for ax, (title, sim_matrix) in zip(axs, sim_matrices.items()):
@@ -160,6 +175,10 @@ for embed_type in []:
         ax.set_title(title)
         ax.set_xlabel("Timestep")
         ax.set_ylabel("Timestep")
+
+    if len(sim_matrices) < len(axs):
+        for ax in axs[len(sim_matrices):]:
+            ax.axis("off")
 
     # Add a single colorbar on the right
     fig.subplots_adjust(right=0.85)
