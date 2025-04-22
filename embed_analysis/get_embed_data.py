@@ -98,7 +98,8 @@ for embed_type in []:
     for i in range(128):
         old_obsvv = obsvv
         rng, rng_a, _rng = jax.random.split(rng, 3)
-        action = jax.random.randint(rng_a, shape=(num_envs, ), minval=0, maxval=17)
+        action = jax.random.randint(
+            rng_a, shape=(num_envs, ), minval=0, maxval=17)
         obsvv, env_state, reward_e, done, info = env.step(
             _rng, env_state, action, env_params
         )
@@ -107,7 +108,6 @@ for embed_type in []:
 
         return_dtype = jax.ShapeDtypeStruct(
             (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
-
 
         obsv_embed_dif = jax.pure_callback(
             get_llm_obs,
@@ -139,99 +139,33 @@ for embed_type in []:
     emb_np_d = np.array(embeddings_diff)
     raw_obs_np_d = np.array(raw_obs_diff)
 
+    sim_matrices = {
+        "Raw": cosine_similarity(raw_obs_np),
+        "Embed": cosine_similarity(emb_np),
+        "Raw diff": cosine_similarity(raw_obs_np_d),
+        "Embed diff": cosine_similarity(emb_np_d),
+    }
 
-    sim_matrix = cosine_similarity(emb_np)  # shape: (N, N)
-    plt.figure(figsize=(8, 6))
-    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
-    plt.title(f"Raw for {embed_type}")
-    plt.xlabel("Timestep")
-    plt.ylabel("Timestep")
-    plt.colorbar(label="Cosine Similarity")
-    plt.tight_layout()
-    plt.savefig("similarity_matrix_emb.png", dpi=300)
+    # Compute global vmin and vmax for shared color scale
+    all_values = np.concatenate([m.flatten() for m in sim_matrices.values()])
+    vmin = np.min(all_values)
+    vmax = np.max(all_values)
+
+    fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+    axs = axs.flatten()
+
+    for ax, (title, sim_matrix) in zip(axs, sim_matrices.items()):
+        im = ax.imshow(sim_matrix, cmap='viridis',
+                       interpolation='nearest', vmin=vmin, vmax=vmax)
+        ax.set_title(title)
+        ax.set_xlabel("Timestep")
+        ax.set_ylabel("Timestep")
+
+    # Add a single colorbar on the right
+    fig.subplots_adjust(right=0.85)
+    cbar_ax = fig.add_axes([0.88, 0.15, 0.02, 0.7])
+    fig.colorbar(im, cax=cbar_ax, label=f"Cosine Similarity for {embed_type}")
+
+    plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.savefig(f"similarity_matrix_combined_{embed_type}.png", dpi=300)
     plt.close()
-
-
-    sim_matrix = cosine_similarity(raw_obs_np)  # shape: (N, N)
-    plt.figure(figsize=(8, 6))
-    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
-    plt.title(f"Embed for {embed_type}")
-    plt.xlabel("Timestep")
-    plt.ylabel("Timestep")
-    plt.colorbar(label="Cosine Similarity")
-    plt.tight_layout()
-    plt.savefig("similarity_matrix_emb.png", dpi=300)
-    plt.close()
-
-
-    sim_matrix = cosine_similarity(emb_np_d)  # shape: (N, N)
-    plt.figure(figsize=(8, 6))
-    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
-    plt.title(f"Raw diff for {embed_type}")
-    plt.xlabel("Timestep")
-    plt.ylabel("Timestep")
-    plt.colorbar(label="Cosine Similarity")
-    plt.tight_layout()
-    plt.savefig("similarity_matrix_emb.png", dpi=300)
-    plt.close()
-
-
-    sim_matrix = cosine_similarity(raw_obs_np)  # shape: (N, N)
-    plt.figure(figsize=(8, 6))
-    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
-    plt.title(f"Embed diff for {embed_type}")
-    plt.xlabel("Timestep")
-    plt.ylabel("Timestep")
-    plt.colorbar(label="Cosine Similarity")
-    plt.tight_layout()
-    plt.savefig("similarity_matrix_emb.png", dpi=300)
-    plt.close()
-
-# pca = PCA(n_components=2)
-# emb_2d = pca.fit_transform(emb_np)
-#
-# plt.figure(figsize=(6, 5))
-# plt.scatter(emb_2d[:, 0], emb_2d[:, 1],
-#             c=np.arange(len(emb_2d)), cmap='viridis')
-# plt.title("PCA of embeddings over time")
-# plt.colorbar(label='Timestep')
-# plt.tight_layout()
-# plt.savefig("embedding_pca.png", dpi=300)
-# plt.close()
-#
-#
-# sim = cosine_similarity(emb_np[:-1], emb_np[1:])
-# step_sim = np.diag(sim)
-#
-# plt.figure(figsize=(6, 4))
-# plt.plot(step_sim)
-# plt.title("Cosine Similarity Between Consecutive Timesteps")
-# plt.xlabel("Timestep")
-# plt.ylabel("Cosine Similarity")
-# plt.tight_layout()
-# plt.savefig("embedding_cosine_similarity.png", dpi=300)
-# plt.close()
-#
-#
-# sim = cosine_similarity(raw_obs_np[:-1], raw_obs_np[1:])
-# step_sim = np.diag(sim)
-#
-# plt.figure(figsize=(6, 4))
-# plt.plot(step_sim)
-# plt.title("Cosine Similarity Between Consecutive Timesteps")
-# plt.xlabel("Timestep")
-# plt.ylabel("Cosine Similarity")
-# plt.tight_layout()
-# plt.savefig("raw_obs_cosine_similarity.png", dpi=300)
-# plt.close()
-#
-# norms = np.linalg.norm(emb_np, axis=1)
-#
-# plt.figure(figsize=(6, 4))
-# plt.plot(norms)
-# plt.title("L2 Norm of Embeddings Over Time")
-# plt.xlabel("Timestep")
-# plt.ylabel("L2 Norm")
-# plt.tight_layout()
-# plt.savefig("embedding_l2_norms.png", dpi=300)
-# plt.close()
