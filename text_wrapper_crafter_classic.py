@@ -195,18 +195,20 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=0):
     """
 
     text_description = []
-    meta_prompt = "You are an intelligent agent exploring the world of Crafter — a procedurally generated open-ended survival game. "
-    meta_prompt += "It is a 2D tile-based environment with nearby tiles visible to you. "
-    # meta_prompt += "Your goal is to survive, gather resources, and explore. You should also complete achievements (eg. sleep) to get rewards. "
-    # meta_prompt += "You will receive an observation describing your current view, which contain various sections such as blocks (grass, sand, etc), items (torch, ladder), "
-    # meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, food, drink, and energy). "
-    # meta_prompt += "Maintaining high levels are important for the agent to stay alive. "
-    # meta_prompt += "You will also receive the brightness level of the environment indicating the time of the day. "
-    meta_prompt += "Your task is to interpret this observation, store important features that is helpful to the agent, "
-    meta_prompt += "and come up with a strategy to help the agent achieve its accomplishments \n"
-    meta_prompt += "The agent has the below list of achievements to complete: "
-    meta_prompt += ", ".join(ACHIEVEMENTS) + ". "
-    if obs_type == 6:
+
+    if obs_type not in [6, 7]:
+        meta_prompt = "you are an intelligent agent exploring the world of crafter — a procedurally generated open-ended survival game. "
+        meta_prompt += "it is a 2d tile-based environment with nearby tiles visible to you. "
+        # meta_prompt += "your goal is to survive, gather resources, and explore. you should also complete achievements (eg. sleep) to get rewards. "
+        # meta_prompt += "you will receive an observation describing your current view, which contain various sections such as blocks (grass, sand, etc), items (torch, ladder), "
+        # meta_prompt += "mobs (zombie, cow, arrow, etc), inventory (wood, iron, diamond, etc), intrinsic values (health, food, drink, and energy). "
+        # meta_prompt += "maintaining high levels are important for the agent to stay alive. "
+        # meta_prompt += "you will also receive the brightness level of the environment indicating the time of the day. "
+        meta_prompt += "your task is to interpret this observation, store important features that is helpful to the agent, "
+        meta_prompt += "and come up with a strategy to help the agent achieve its accomplishments \n"
+        meta_prompt += "the agent has the below list of achievements to complete: "
+        meta_prompt += ", ".join(ACHIEVEMENTS) + ". "
+    else:
         meta_prompt = ""
 
     text_description.append(meta_prompt)
@@ -278,7 +280,7 @@ def symbolic_to_text_numpy(symbolic_array, obs_type=0, obs_only=0):
                 get_obs_type_4_description(block_types_str, mob_types_str, distance_matrix)
             )
 
-    elif obs_type == 3:
+    elif obs_type in [3, 7]:
         block_description = "There are a total of 16 different types of blocks: "
         block_description += ", ".join(all_block_types_neutral)
         text_description.append(block_description)
@@ -432,6 +434,12 @@ MakeIronSword — A nearby crafting table and furnace, and I need wood, coal, an
                 descriptions = [distance_lookup.get(d, "Unknown movement") for d in distance_tuples]
                 text_description.append(mob_id_to_text[mob] + " is at: " + ", ".join(descriptions))
 
+
+    if obs_only:
+        if obs_type == 6:
+            text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
+        return text_description
+
     # Direction
     direction_array = symbolic_array[1339:1343]
     # text_description.append(
@@ -439,17 +447,12 @@ MakeIronSword — A nearby crafting table and furnace, and I need wood, coal, an
     # )
     text_description.append(
         "The agent is facing "
-        + Block_id_to_text[
+            + Block_id_to_text[
             np.argmax(symbolic_array_map_blocks, axis=-1)[
-                Direction_to_obj[np.argwhere(direction_array == 1).item()]
-            ]
+            Direction_to_obj[np.argwhere(direction_array == 1).item()]
+        ]
         ]
     )
-
-    if obs_only:
-        if obs_type == 6:
-            text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
-        return text_description
 
     inventory = np.round((symbolic_array[1323:1335] * 10) ** 2).astype(np.int64)
     inventory_description = (
