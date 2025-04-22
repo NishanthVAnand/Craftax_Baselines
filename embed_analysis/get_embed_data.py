@@ -38,7 +38,7 @@ parser.add_argument(
     type=int,
     default=3,
 )
-parser.add_argument("--obs_only", type=int, default=0,
+parser.add_argument("--obs_only", type=int, default=1,
                     help="0: use all, 1: only obs")
 
 parser.add_argument("--optimistic_reset_ratio", type=int, default=16)
@@ -88,64 +88,104 @@ rng, reset_rng = jax.random.split(rng)
 obsvv, env_state = env.reset(reset_rng, env_params)
 
 embeddings = []
+embeddings_diff = []
 raw_obs = []
-for i in range(128):
-    rng, rng_a, _rng = jax.random.split(rng, 3)
-    action = jax.random.randint(rng_a, shape=(num_envs, ), minval=0, maxval=17)
-    obsvv, env_state, reward_e, done, info = env.step(
-        _rng, env_state, action, env_params
-    )
-    raw_obs.append(np.array(obsvv[0]))
-    return_dtype = jax.ShapeDtypeStruct(
-        (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
-    obsv = jax.pure_callback(
-        get_llm_obs,
-        return_dtype,
-        obsvv,
-        config["LAYER"],
-        config["EMB_TYPE"],
-        config["DECAY"],
-        config["EQ_SPLIT"],
-        config["OBS_TYPE"],
-        config["OBS_ONLY"],)
+raw_obs_diff = []
 
-    embeddings.append(np.array(obsv[0]))
-    if done[0]:
-        break
+for embed_type in []:
+    config["EMB_TYPE"] = embed_type
 
-# embeddings = jnp.concatenate(embeddings, axis=0)
-raw_obs = jnp.concatenate(raw_obs, axis=0)
+    for i in range(128):
+        old_obsvv = obsvv
+        rng, rng_a, _rng = jax.random.split(rng, 3)
+        action = jax.random.randint(rng_a, shape=(num_envs, ), minval=0, maxval=17)
+        obsvv, env_state, reward_e, done, info = env.step(
+            _rng, env_state, action, env_params
+        )
+        raw_obs.append(np.array(obsvv[0]))
+        raw_obs_diff.append(np.array(obsvv[0] - old_obsvv[0]))
 
-emb_np = np.array(embeddings)
-raw_obs_np = np.array(raw_obs)
-
-sim_matrix = cosine_similarity(emb_np)  # shape: (N, N)
-
-# Plot and save the similarity heatmap
-plt.figure(figsize=(8, 6))
-plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
-plt.title("Cosine Similarity Matrix")
-plt.xlabel("Timestep")
-plt.ylabel("Timestep")
-plt.colorbar(label="Cosine Similarity")
-plt.tight_layout()
-plt.savefig("similarity_matrix_emb.png", dpi=300)
-plt.close()
+        return_dtype = jax.ShapeDtypeStruct(
+            (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
 
 
+        obsv_embed_dif = jax.pure_callback(
+            get_llm_obs,
+            return_dtype,
+            jnp.abs(obsvv - old_obsvv),
+            config["LAYER"],
+            config["EMB_TYPE"],
+            config["DECAY"],
+            config["EQ_SPLIT"],
+            config["OBS_TYPE"],
+            config["OBS_ONLY"],)
 
-sim_matrix = cosine_similarity(emb_np)  # shape: (N, N)
+        obsv = jax.pure_callback(
+            get_llm_obs,
+            return_dtype,
+            obsvv,
+            config["LAYER"],
+            config["EMB_TYPE"],
+            config["DECAY"],
+            config["EQ_SPLIT"],
+            config["OBS_TYPE"],
+            config["OBS_ONLY"],)
 
-# Plot and save the similarity heatmap
-plt.figure(figsize=(8, 6))
-plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
-plt.title("Cosine Similarity Matrix")
-plt.xlabel("Timestep")
-plt.ylabel("Timestep")
-plt.colorbar(label="Cosine Similarity")
-plt.tight_layout()
-plt.savefig("similarity_matrix_raw.png", dpi=300)
-plt.close()
+        embeddings.append(np.array(obsv[0]))
+        embeddings_diff.append(np.array(obsv_embed_dif[0]))
+
+    emb_np = np.array(embeddings)
+    raw_obs_np = np.array(raw_obs)
+    emb_np_d = np.array(embeddings_diff)
+    raw_obs_np_d = np.array(raw_obs_diff)
+
+
+    sim_matrix = cosine_similarity(emb_np)  # shape: (N, N)
+    plt.figure(figsize=(8, 6))
+    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
+    plt.title(f"Raw for {embed_type}")
+    plt.xlabel("Timestep")
+    plt.ylabel("Timestep")
+    plt.colorbar(label="Cosine Similarity")
+    plt.tight_layout()
+    plt.savefig("similarity_matrix_emb.png", dpi=300)
+    plt.close()
+
+
+    sim_matrix = cosine_similarity(raw_obs_np)  # shape: (N, N)
+    plt.figure(figsize=(8, 6))
+    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
+    plt.title(f"Embed for {embed_type}")
+    plt.xlabel("Timestep")
+    plt.ylabel("Timestep")
+    plt.colorbar(label="Cosine Similarity")
+    plt.tight_layout()
+    plt.savefig("similarity_matrix_emb.png", dpi=300)
+    plt.close()
+
+
+    sim_matrix = cosine_similarity(emb_np_d)  # shape: (N, N)
+    plt.figure(figsize=(8, 6))
+    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
+    plt.title(f"Raw diff for {embed_type}")
+    plt.xlabel("Timestep")
+    plt.ylabel("Timestep")
+    plt.colorbar(label="Cosine Similarity")
+    plt.tight_layout()
+    plt.savefig("similarity_matrix_emb.png", dpi=300)
+    plt.close()
+
+
+    sim_matrix = cosine_similarity(raw_obs_np)  # shape: (N, N)
+    plt.figure(figsize=(8, 6))
+    plt.imshow(sim_matrix, cmap='viridis', interpolation='nearest')
+    plt.title(f"Embed diff for {embed_type}")
+    plt.xlabel("Timestep")
+    plt.ylabel("Timestep")
+    plt.colorbar(label="Cosine Similarity")
+    plt.tight_layout()
+    plt.savefig("similarity_matrix_emb.png", dpi=300)
+    plt.close()
 
 # pca = PCA(n_components=2)
 # emb_2d = pca.fit_transform(emb_np)
