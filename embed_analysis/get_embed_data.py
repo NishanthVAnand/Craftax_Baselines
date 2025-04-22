@@ -81,57 +81,23 @@ env = OptimisticResetVecEnvWrapper(
     reset_ratio=min(4, num_envs),
 )
 
-for embed_type in [0, 1, 2, 3, 4, 5, 6]:
+for obs_type in [0, 1, 2, 3, 4, 6, 7]:
+    for embed_type in [0, 1, 2, 3, 4, 5, 6]:
 
-    embeddings = []
-    embeddings_diff = []
-    embeddings_llm_diff = []
-    raw_obs = []
-    raw_obs_diff = []
-    print(embed_type)
-    config["EMB_TYPE"] = embed_type
-    config["NUM_PARAMS"] = emb_dict_map[int(config["EMB_TYPE"])]
-    rng = jax.random.PRNGKey(0)
-    rng, reset_rng = jax.random.split(rng)
-    obsvv, env_state = env.reset(reset_rng, env_params)
-    return_dtype = jax.ShapeDtypeStruct(
-        (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
-    obsv = jax.pure_callback(
-        get_llm_obs,
-        return_dtype,
-        obsvv,
-        config["LAYER"],
-        config["EMB_TYPE"],
-        config["DECAY"],
-        config["EQ_SPLIT"],
-        config["OBS_TYPE"],
-        config["OBS_ONLY"],)
-    for i in range(128):
-        old_obsvv = obsvv
-        old_obs = obsv
-        rng, rng_a, _rng = jax.random.split(rng, 3)
-        action = jax.random.randint(
-            rng_a, shape=(num_envs, ), minval=0, maxval=17)
-        obsvv, env_state, reward_e, done, info = env.step(
-            _rng, env_state, action, env_params
-        )
-        raw_obs.append(np.array(obsvv[0]))
-        raw_obs_diff.append(np.array(jnp.abs(obsvv[0] - old_obsvv[0])))
+        embeddings = []
+        embeddings_diff = []
+        embeddings_llm_diff = []
+        raw_obs = []
+        raw_obs_diff = []
+        config["EMB_TYPE"] = embed_type
+        config["NUM_PARAMS"] = emb_dict_map[int(config["EMB_TYPE"])]
+        config["OBS_TYPE"] = obs_type
 
+        rng = jax.random.PRNGKey(0)
+        rng, reset_rng = jax.random.split(rng)
+        obsvv, env_state = env.reset(reset_rng, env_params)
         return_dtype = jax.ShapeDtypeStruct(
             (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
-
-        obsv_embed_dif = jax.pure_callback(
-            get_llm_obs,
-            return_dtype,
-            jnp.abs(obsvv - old_obsvv),
-            config["LAYER"],
-            config["EMB_TYPE"],
-            config["DECAY"],
-            config["EQ_SPLIT"],
-            config["OBS_TYPE"],
-            config["OBS_ONLY"],)
-
         obsv = jax.pure_callback(
             get_llm_obs,
             return_dtype,
@@ -142,49 +108,85 @@ for embed_type in [0, 1, 2, 3, 4, 5, 6]:
             config["EQ_SPLIT"],
             config["OBS_TYPE"],
             config["OBS_ONLY"],)
+        for i in range(128):
+            old_obsvv = obsvv
+            old_obs = obsv
+            rng, rng_a, _rng = jax.random.split(rng, 3)
+            action = jax.random.randint(
+                rng_a, shape=(num_envs, ), minval=0, maxval=17)
+            obsvv, env_state, reward_e, done, info = env.step(
+                _rng, env_state, action, env_params
+            )
+            raw_obs.append(np.array(obsvv[0]))
+            raw_obs_diff.append(np.array(jnp.abs(obsvv[0] - old_obsvv[0])))
 
-        embeddings.append(np.array(obsv[0]))
-        embeddings_diff.append(np.array(obsv_embed_dif[0]))
-        embeddings_llm_diff.append(np.array((old_obs - obsv)[0]))
+            return_dtype = jax.ShapeDtypeStruct(
+                (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
 
-    emb_np = np.array(embeddings)
-    raw_obs_np = np.array(raw_obs)
-    emb_np_d = np.array(embeddings_diff)
-    raw_obs_np_d = np.array(raw_obs_diff)
-    embeddings_llm_diff_p = np.array(embeddings_llm_diff)
+            obsv_embed_dif = jax.pure_callback(
+                get_llm_obs,
+                return_dtype,
+                jnp.abs(obsvv - old_obsvv),
+                config["LAYER"],
+                config["EMB_TYPE"],
+                config["DECAY"],
+                config["EQ_SPLIT"],
+                config["OBS_TYPE"],
+                config["OBS_ONLY"],)
 
-    sim_matrices = {
-        "Raw": cosine_similarity(raw_obs_np),
-        "Embed": cosine_similarity(emb_np),
-        "Raw diff": cosine_similarity(raw_obs_np_d),
-        "Embed diff": cosine_similarity(emb_np_d),
-        "Embed consecutive diff": cosine_similarity(embeddings_llm_diff_p)
-    }
+            obsv = jax.pure_callback(
+                get_llm_obs,
+                return_dtype,
+                obsvv,
+                config["LAYER"],
+                config["EMB_TYPE"],
+                config["DECAY"],
+                config["EQ_SPLIT"],
+                config["OBS_TYPE"],
+                config["OBS_ONLY"],)
 
-    # Compute global vmin and vmax for shared color scale
-    all_values = np.concatenate([m.flatten() for m in sim_matrices.values()])
-    vmin = np.min(all_values)
-    vmax = np.max(all_values)
+            embeddings.append(np.array(obsv[0]))
+            embeddings_diff.append(np.array(obsv_embed_dif[0]))
+            embeddings_llm_diff.append(np.array((old_obs - obsv)[0]))
 
-    fig, axs = plt.subplots(2, 3, figsize=(12, 10))
-    axs = axs.flatten()
+        emb_np = np.array(embeddings)
+        raw_obs_np = np.array(raw_obs)
+        emb_np_d = np.array(embeddings_diff)
+        raw_obs_np_d = np.array(raw_obs_diff)
+        embeddings_llm_diff_p = np.array(embeddings_llm_diff)
 
-    for ax, (title, sim_matrix) in zip(axs, sim_matrices.items()):
-        im = ax.imshow(sim_matrix, cmap='viridis',
-                       interpolation='nearest', vmin=vmin, vmax=vmax)
-        ax.set_title(title)
-        ax.set_xlabel("Timestep")
-        ax.set_ylabel("Timestep")
+        sim_matrices = {
+            "Raw": cosine_similarity(raw_obs_np),
+            "Embed": cosine_similarity(emb_np),
+            "Raw diff": cosine_similarity(raw_obs_np_d),
+            "Embed diff": cosine_similarity(emb_np_d),
+            "Embed consecutive diff": cosine_similarity(embeddings_llm_diff_p)
+        }
 
-    if len(sim_matrices) < len(axs):
-        for ax in axs[len(sim_matrices):]:
-            ax.axis("off")
+        # Compute global vmin and vmax for shared color scale
+        all_values = np.concatenate([m.flatten() for m in sim_matrices.values()])
+        vmin = np.min(all_values)
+        vmax = np.max(all_values)
 
-    # Add a single colorbar on the right
-    fig.subplots_adjust(right=0.85)
-    cbar_ax = fig.add_axes([0.88, 0.15, 0.02, 0.7])
-    fig.colorbar(im, cax=cbar_ax, label=f"Cosine Similarity for {embed_type}")
+        fig, axs = plt.subplots(2, 3, figsize=(12, 10))
+        axs = axs.flatten()
 
-    plt.tight_layout(rect=[0, 0, 0.85, 1])
-    plt.savefig(f"similarity_matrix_combined_{embed_type}.png", dpi=300)
-    plt.close()
+        for ax, (title, sim_matrix) in zip(axs, sim_matrices.items()):
+            im = ax.imshow(sim_matrix, cmap='viridis',
+                           interpolation='nearest', vmin=vmin, vmax=vmax)
+            ax.set_title(title)
+            ax.set_xlabel("Timestep")
+            ax.set_ylabel("Timestep")
+
+        if len(sim_matrices) < len(axs):
+            for ax in axs[len(sim_matrices):]:
+                ax.axis("off")
+
+        # Add a single colorbar on the right
+        fig.subplots_adjust(right=0.85)
+        cbar_ax = fig.add_axes([0.88, 0.15, 0.02, 0.7])
+        fig.colorbar(im, cax=cbar_ax, label=f"Cosine Similarity for emb type {embed_type} obs type {obs_type}")
+
+        plt.tight_layout(rect=[0, 0, 0.85, 1])
+        plt.savefig(f"similarity_matrix_combined_emb_type_{embed_type}_obs_type_{obs_type}.png", dpi=300)
+        plt.close()
