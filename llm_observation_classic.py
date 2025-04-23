@@ -91,9 +91,6 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only):
         curr_text = "\n".join(curr_text_list)
         text_obs.append(curr_text)
 
-    if obs_type == 4:
-        text_obs = get_obs_type_4_description(text_obs)
-
     text_obs_chunks = [text_obs[i :: num_gpus - 1] for i in range(num_gpus - 1)]
 
     embed = []
