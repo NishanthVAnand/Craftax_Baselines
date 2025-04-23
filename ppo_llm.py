@@ -765,7 +765,10 @@ if __name__ == "__main__":
         5: hidden_size * len(args.layer) + args.obs_only * 22,
         6: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
     }
-    args.num_params = emb_dict_map[int(args.emb_type)]
+    if args.obs_type == -1:
+        args.num_params = 1345
+    else:
+        args.num_params = emb_dict_map[int(args.emb_type)]
 
     if args.use_e3b:
         assert args.train_icm
