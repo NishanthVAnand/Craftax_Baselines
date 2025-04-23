@@ -113,8 +113,6 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_
             embed.append(future.result().to(dtype=torch.float32).cpu().numpy())
 
     numpy_embed = np.concatenate(embed, axis=0)
-    if obs_only:
-        numpy_embed = np.concatenate([numpy_embed, obs[:, -22:]], axis=1)
 
     if norm_type == 0:
         pass
@@ -124,6 +122,9 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_
         numpy_embed = min_max_scaler.transform(numpy_embed)
     else:
         raise ValueError("Invalid normalization type. Choose 0, 1, or 2.")
+
+    if obs_only:
+        numpy_embed = np.concatenate([numpy_embed, obs[:, -22:]], axis=1)
 
     torch.cuda.empty_cache()
 
