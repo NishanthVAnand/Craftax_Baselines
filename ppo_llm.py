@@ -94,8 +94,10 @@ def make_train(config):
                 network = ActorCriticLinear(env.action_space(env_params).n)
             elif config["NETWORK_TYPE"] == "ActorCriticOneLayer":
                 network = ActorCriticOneLayer(env.action_space(env_params).n, config["LAYER_SIZE"])
-            else:
+            elif config["NETWORK_TYPE"] == "ActorCriticTwoLayer":
                 network = ActorCriticTwoLayer(env.action_space(env_params).n, config["LAYER_SIZE"])
+            else:
+                network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
         else:
             network = ActorCriticConv(env.action_space(env_params).n, config["LAYER_SIZE"])
 
