@@ -1,4 +1,5 @@
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from craftax.craftax_classic.constants import *
@@ -48,7 +49,7 @@ args = parser.parse_args()
 if args.obs_only == 0:
     concat_size = 0
 elif args.obs_only == 1:
-    concat_size = 22
+    concat_size = 0
 elif args.obs_only == 2:
     concat_size = 1345
 else:
@@ -156,12 +157,18 @@ with PdfPages('similarity_matrix_combined_all.pdf') as pdf:
                 embeddings_llm_diff.append(np.array((old_obs - obsv)[0]))
 
             emb_np = np.array(embeddings)
+            minmax_scaler = MinMaxScaler()
+            minmax_scaler.fit(emb_np)
+            emb_np_min_max_normallized = minmax_scaler.transform(emb_np)
+            standard_scaler = StandardScaler()
+            standard_scaler.fit(emb_np)
+            emb_np_standard_normalized = standard_scaler.transform(emb_np)
             raw_obs_np = np.array(raw_obs)
             raw_obs_only_np = np.array(raw_obs_only)
             emb_np_d = np.array(embeddings_diff)
             raw_obs_np_d = np.array(raw_obs_diff)
             embeddings_llm_diff_p = np.array(embeddings_llm_diff)
-            emmbed_and_embed_diff_concat = np.concat([emb_np, emb_np_d], axis=-1)
+            emmbed_and_embed_diff_concat = np.concat([emb_np, embeddings_llm_diff_p], axis=-1)
 
             sim_matrices = {
                 "Raw": cosine_similarity(raw_obs_np),
@@ -170,7 +177,9 @@ with PdfPages('similarity_matrix_combined_all.pdf') as pdf:
                 "Raw diff": cosine_similarity(raw_obs_np_d),
                 "Embed diff": cosine_similarity(emb_np_d),
                 "Embed consecutive diff": cosine_similarity(embeddings_llm_diff_p),
-                "Embed and Embed Diff Concat": cosine_similarity(emmbed_and_embed_diff_concat),
+                "Embed and Embed Consecutive Diff Concat": cosine_similarity(emmbed_and_embed_diff_concat),
+                "Embed min-max normallized": cosine_similarity(emb_np_min_max_normallized),
+                "Embed standard normallized": cosine_similarity(emb_np_standard_normalized),
             }
 
             # Compute global vmin and vmax for shared color scale
