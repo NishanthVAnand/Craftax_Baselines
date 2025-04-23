@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "/home/s/saminur/LLM_representation/wt_craftax-experiments-sami/Craftax_Baselines/ppo_llm.py", line 735, in <module>
-    raise ValueError(f"Unknown args {rest_args}")
-ValueError: Unknown args ['-obs_type=2']
