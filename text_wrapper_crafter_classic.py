@@ -436,8 +436,12 @@ MakeIronSword — A nearby crafting table and furnace, and I need wood, coal, an
 
 
     if obs_only:
-        if obs_type == 6:
-            text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
+        if obs_type in [6, 8]:
+            if obs_type == 6:
+                text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
+            else:
+                text_description.append("\n\nGiven the above descriptions, the Q-value is: ")
+
         return text_description
 
     # Direction
@@ -513,8 +517,11 @@ MakeIronSword — A nearby crafting table and furnace, and I need wood, coal, an
         text_description.append("The agent is awake.")
 
 
-    if obs_type == 6:
-        text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
+    if obs_type in [6, 8]:
+        if obs_type == 6:
+            text_description.append("\n\nGiven the above descriptions, the action I should take is: ")
+        else:
+            text_description.append("\n\nGiven the above descriptions, the Q-value is: ")
 
     return text_description
 
