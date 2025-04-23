@@ -88,6 +88,9 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_
     crop_size = int(crop_size)
     norm_type = int(norm_type)
 
+    if obs_type == -1:
+        return obs
+
     text_obs = []
     for curr_obs in obs:
         curr_text_list = symbolic_to_text_numpy(
