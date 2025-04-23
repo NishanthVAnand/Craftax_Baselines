@@ -7,7 +7,12 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from custom_llama import CustomLlamaForCausalLM
 from concurrent.futures import ThreadPoolExecutor
 
+from normalization import MinMaxScaler, StandardScaler
+
 import os
+
+min_max_scaler = MinMaxScaler()
+standard_scaler = StandardScaler()
 
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
@@ -72,7 +77,7 @@ def gpu_inference(i, text_obs_chunk, layer, emb_type, decay, eq_split, obs_type)
     return hidden_states
 
 
-def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_size):
+def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_size, norm_type=0):
     obs = np.array(obs)
     layer = [int(lay) for lay in layer]
     emb_type = int(emb_type)
@@ -81,6 +86,7 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_
     obs_type = int(obs_type)
     obs_only = int(obs_only)
     crop_size = int(crop_size)
+    norm_type = int(norm_type)
 
     text_obs = []
     for curr_obs in obs:
@@ -109,6 +115,15 @@ def get_llm_obs(obs, layer, emb_type, decay, eq_split, obs_type, obs_only, crop_
     numpy_embed = np.concatenate(embed, axis=0)
     if obs_only:
         numpy_embed = np.concatenate([numpy_embed, obs[:, -22:]], axis=1)
+
+    if norm_type == 0:
+        pass
+    elif norm_type == 1:
+        numpy_embed = standard_scaler.transform(numpy_embed)
+    elif norm_type == 2:
+        numpy_embed = min_max_scaler.transform(numpy_embed)
+    else:
+        raise ValueError("Invalid normalization type. Choose 0, 1, or 2.")
 
     torch.cuda.empty_cache()
 

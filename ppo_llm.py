@@ -148,6 +148,7 @@ def make_train(config):
                 config["OBS_TYPE"],
                 config["OBS_ONLY"],
                 config["CROP_SIZE"],
+                config["NORM_TYPE"],
             )
             obs_shape = obs_llm.shape[0]
 
@@ -237,6 +238,7 @@ def make_train(config):
             config["OBS_TYPE"],
             config["OBS_ONLY"],
             config["CROP_SIZE"],
+            config["NORM_TYPE"],
         )
 
         # TRAIN LOOP
@@ -277,6 +279,7 @@ def make_train(config):
                     config["OBS_TYPE"],
                     config["OBS_ONLY"],
                     config["CROP_SIZE"],
+                    config["NORM_TYPE"],
                 )
 
                 reward_i = jnp.zeros(config["NUM_ENVS"])
@@ -725,6 +728,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("--obs_only", type=int, default=0, help="0: use all, 1: only obs")
     parser.add_argument("--model", type=int, default=0, help="0: llama-8B, 1: llama-70B")
+    parser.add_argument(
+        "--norm_type", type=int, default=0, help="0: no norm, 1: min max scaler, 2: std norm"
+    )
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)
