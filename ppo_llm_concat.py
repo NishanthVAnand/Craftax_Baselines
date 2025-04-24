@@ -767,13 +767,13 @@ if __name__ == "__main__":
         hidden_size = 8192
 
     emb_dict_map = {
-        0: hidden_size * len(args.layer) + args.obs_only * 22,
-        1: hidden_size * len(args.layer) + args.obs_only * 22,
-        2: hidden_size * len(args.layer) + args.obs_only * 22,
-        3: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
-        4: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
-        5: hidden_size * len(args.layer) + args.obs_only * 22,
-        6: hidden_size * int(args.eq_split) * len(args.layer) + args.obs_only * 22,
+        0: hidden_size * len(args.layer),
+        1: hidden_size * len(args.layer),
+        2: hidden_size * len(args.layer),
+        3: hidden_size * int(args.eq_split) * len(args.layer),
+        4: hidden_size * int(args.eq_split) * len(args.layer),
+        5: hidden_size * len(args.layer),
+        6: hidden_size * int(args.eq_split) * len(args.layer),
     }
     if args.obs_type == -1:
         args.num_params = 1345
