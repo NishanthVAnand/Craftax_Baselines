@@ -14,6 +14,10 @@ class ActorCriticConvSymbolicCraftax(nn.Module):
 
     @nn.compact
     def __call__(self, obs, llm_embedding):
+
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
         # Split into map and flat obs
         flat_map_obs_shape = self.map_obs_shape[0] * self.map_obs_shape[1] * self.map_obs_shape[2]
         image_obs = obs[:, :flat_map_obs_shape]
@@ -82,6 +86,10 @@ class ActorCriticConv(nn.Module):
 
     @nn.compact
     def __call__(self, obs, llm_embedding):
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         x = nn.Conv(features=32, kernel_size=(5, 5))(obs)
         x = nn.relu(x)
         x = nn.max_pool(x, window_shape=(3, 3), strides=(3, 3))
@@ -135,6 +143,10 @@ class ActorCritic(nn.Module):
             activation = nn.relu
         else:
             activation = nn.tanh
+
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         x = jnp.concatenate([x, llm_embedding], axis=-1)
 
@@ -203,6 +215,10 @@ class ActorCriticWithEmbedding(nn.Module):
         else:
             activation = nn.tanh
 
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         x = jnp.concatenate([x, llm_embedding], axis=-1)
 
         actor_emb = nn.Dense(
@@ -261,6 +277,10 @@ class ActorCriticLinear(nn.Module):
 
     @nn.compact
     def __call__(self, x, llm_embedding):
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         concat_input = jnp.concatenate([x, llm_embedding], axis=-1)
         actor_mean = nn.Dense(
             self.action_dim, kernel_init=orthogonal(0.01), bias_init=constant(0.0)
@@ -283,6 +303,10 @@ class ActorCriticOneLayer(nn.Module):
             activation = nn.relu
         else:
             activation = nn.tanh
+
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         x = jnp.concatenate([x, llm_embedding], axis=-1)
 
@@ -321,6 +345,10 @@ class ActorCriticTwoLayer(nn.Module):
             activation = nn.relu
         else:
             activation = nn.tanh
+
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         x = jnp.concatenate([x, llm_embedding], axis=-1)
 

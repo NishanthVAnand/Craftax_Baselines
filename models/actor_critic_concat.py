@@ -49,6 +49,10 @@ class ActorCriticConvSymbolicCraftax(nn.Module):
         )(actor_mean)
         actor_mean = nn.relu(actor_mean)
 
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         actor_mean = jnp.concatenate([actor_mean, llm_embedding], axis=-1)
 
         actor_mean = nn.Dense(
@@ -106,6 +110,10 @@ class ActorCriticConv(nn.Module):
         )(actor_mean)
         actor_mean = nn.relu(actor_mean)
 
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         actor_mean = jnp.concatenate([actor_mean, llm_embedding], axis=-1)
 
         actor_mean = nn.Dense(
@@ -158,6 +166,10 @@ class ActorCritic(nn.Module):
             bias_init=constant(0.0),
         )(actor_mean)
         actor_mean = activation(actor_mean)
+
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         actor_mean = jnp.concatenate([actor_mean, llm_embedding], axis=-1)
 
@@ -226,6 +238,10 @@ class ActorCriticWithEmbedding(nn.Module):
         )
         actor_emb = activation(actor_emb)
 
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         actor_mean = jnp.concatenate([actor_mean, llm_embedding], axis=-1)
 
         actor_mean = nn.Dense(
@@ -267,6 +283,10 @@ class ActorCriticLinear(nn.Module):
 
     @nn.compact
     def __call__(self, x, llm_embedding):
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         concat_input = jnp.concatenate([x, llm_embedding], axis=-1)
         actor_mean = nn.Dense(
             self.action_dim, kernel_init=orthogonal(0.01), bias_init=constant(0.0)
@@ -296,6 +316,10 @@ class ActorCriticOneLayer(nn.Module):
             bias_init=constant(0.0),
         )(x)
         actor_mean = activation(actor_mean)
+
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         actor_mean = jnp.concatenate([actor_mean, llm_embedding], axis=-1)
 
@@ -343,6 +367,10 @@ class ActorCriticTwoLayer(nn.Module):
             bias_init=constant(0.0),
         )(actor_mean)
         actor_mean = activation(actor_mean)
+
+        llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         actor_mean = jnp.concatenate([actor_mean, llm_embedding], axis=-1)
 
