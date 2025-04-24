@@ -623,7 +623,7 @@ if __name__ == "__main__":
         type=int,
         default=1024,
     )
-    parser.add_argument("--crop_size", type=int, default=5)
+    parser.add_argument("--crop_size", type=int, default=0)
     parser.add_argument("--achievement", type=str, default="PLACE_TABLE")
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=1e9

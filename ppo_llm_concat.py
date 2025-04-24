@@ -21,7 +21,7 @@ from orbax.checkpoint import (
 )
 
 from logz.batch_logging import batch_log, create_log_dict
-from models.actor_critic import (
+from models.actor_critic_concat import (
     ActorCritic,
     ActorCriticConv,
     ActorCriticLinear,
@@ -52,7 +52,9 @@ class Transition(NamedTuple):
     reward: jnp.ndarray
     log_prob: jnp.ndarray
     obs: jnp.ndarray
+    embed: jnp.ndarray
     next_obs: jnp.ndarray
+    next_embed: jnp.ndarray
     info: jnp.ndarray
 
 
@@ -102,9 +104,9 @@ def make_train(config):
             network = ActorCriticConv(env.action_space(env_params).n, config["LAYER_SIZE"])
 
         rng, _rng = jax.random.split(rng)
-        # init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
-        init_x = jnp.zeros((1, config["NUM_PARAMS"]))
-        network_params = network.init(_rng, init_x)
+        init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
+        init_embed = jnp.zeros((1, config["NUM_PARAMS"]))
+        network_params = network.init(_rng, init_x, init_embed)
         if config["ANNEAL_LR"]:
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
@@ -130,9 +132,10 @@ def make_train(config):
         }
 
         if config["TRAIN_ICM"]:
-            # obs_shape = env.observation_space(env_params).shape
-            # assert len(obs_shape) == 1, "Only configured for 1D observations"
-            # obs_shape = obs_shape[0]
+            obs_shape = env.observation_space(env_params).shape
+            assert len(obs_shape) == 1, "Only configured for 1D observations"
+            obs_shape = obs_shape[0]
+
             sample_obs = jnp.zeros(env.observation_space(env_params).shape)
             return_dtype = jax.ShapeDtypeStruct(
                 (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32
@@ -150,7 +153,7 @@ def make_train(config):
                 config["CROP_SIZE"],
                 config["NORM_TYPE"],
             )
-            obs_shape = obs_llm.shape[0]
+            obs_shape_llm = obs_llm.shape[0]
 
             # Encoder
             icm_encoder_network = ICMEncoder(
@@ -225,12 +228,12 @@ def make_train(config):
 
         # INIT ENV
         rng, _rng = jax.random.split(rng)
-        obsv_old, env_state = env.reset(_rng, env_params)
+        obsv, env_state = env.reset(_rng, env_params)
         return_dtype = jax.ShapeDtypeStruct((config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32)
-        obsv = jax.pure_callback(
+        embed = jax.pure_callback(
             get_llm_obs,
             return_dtype,
-            obsv_old,
+            obsv,
             config["LAYER"],
             config["EMB_TYPE"],
             config["DECAY"],
@@ -249,6 +252,7 @@ def make_train(config):
                     train_state,
                     env_state,
                     last_obs,
+                    last_embedding,
                     ex_state,
                     rng,
                     update_step,
@@ -256,22 +260,22 @@ def make_train(config):
 
                 # SELECT ACTION
                 rng, _rng = jax.random.split(rng)
-                pi, value = network.apply(train_state.params, last_obs)
+                pi, value = network.apply(train_state.params, last_obs, last_embedding)
                 action = pi.sample(seed=_rng)
                 log_prob = pi.log_prob(action)
 
                 # STEP ENV
                 rng, _rng = jax.random.split(rng)
-                obsv_old, env_state, reward_e, done, info = env.step(
+                obsv, env_state, reward_e, done, info = env.step(
                     _rng, env_state, action, env_params
                 )
                 return_dtype = jax.ShapeDtypeStruct(
                     (config["NUM_ENVS"], config["NUM_PARAMS"]), jnp.float32
                 )  # 4096 is the size of the embedding from llama-8B
-                obsv = jax.pure_callback(
+                embed = jax.pure_callback(
                     get_llm_obs,
                     return_dtype,
-                    obsv_old,
+                    obsv,
                     config["LAYER"],
                     config["EMB_TYPE"],
                     config["DECAY"],
@@ -335,13 +339,16 @@ def make_train(config):
                     reward_e=reward_e,
                     log_prob=log_prob,
                     obs=last_obs,
+                    embed=last_embedding,
                     next_obs=obsv,
+                    next_embed=embed,
                     info=info,
                 )
                 runner_state = (
                     train_state,
                     env_state,
                     obsv,
+                    embed,
                     ex_state,
                     rng,
                     update_step,
@@ -357,11 +364,12 @@ def make_train(config):
                 train_state,
                 env_state,
                 last_obs,
+                last_embedding,
                 ex_state,
                 rng,
                 update_step,
             ) = runner_state
-            _, last_val = network.apply(train_state.params, last_obs)
+            _, last_val = network.apply(train_state.params, last_obs, last_embedding)
 
             def _calculate_gae(traj_batch, last_val):
                 def _get_advantages(gae_and_next_value, transition):
@@ -394,7 +402,7 @@ def make_train(config):
                     # Policy/value network
                     def _loss_fn(params, traj_batch, gae, targets):
                         # RERUN NETWORK
-                        pi, value = network.apply(params, traj_batch.obs)
+                        pi, value = network.apply(params, traj_batch.obs, traj_batch.embed)
                         log_prob = pi.log_prob(traj_batch.action)
 
                         # CALCULATE VALUE LOSS
@@ -611,6 +619,7 @@ def make_train(config):
                 train_state,
                 env_state,
                 last_obs,
+                last_embedding,
                 ex_state,
                 rng,
                 update_step + 1,
@@ -622,6 +631,7 @@ def make_train(config):
             train_state,
             env_state,
             obsv,
+            embed,
             ex_state,
             _rng,
             0,
@@ -640,7 +650,7 @@ def run_ppo(config):
             project=config["WANDB_PROJECT"],
             entity=config["WANDB_ENTITY"],
             config=config,
-            name="LLM-"
+            name="LLM-Concat-"
             + config["ENV_NAME"]
             + "-"
             + str(int(config["TOTAL_TIMESTEPS"] // 1e6))
