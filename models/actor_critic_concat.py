@@ -49,6 +49,10 @@ class ActorCriticConvSymbolicCraftax(nn.Module):
         )(actor_mean)
         actor_mean = nn.relu(actor_mean)
 
+        llm_embedding = nn.Dense(256, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
             llm_embedding
         )
@@ -110,6 +114,10 @@ class ActorCriticConv(nn.Module):
         )(actor_mean)
         actor_mean = nn.relu(actor_mean)
 
+        llm_embedding = nn.Dense(256, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
             llm_embedding
         )
@@ -166,6 +174,10 @@ class ActorCritic(nn.Module):
             bias_init=constant(0.0),
         )(actor_mean)
         actor_mean = activation(actor_mean)
+
+        llm_embedding = nn.Dense(256, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
             llm_embedding
@@ -238,6 +250,10 @@ class ActorCriticWithEmbedding(nn.Module):
         )
         actor_emb = activation(actor_emb)
 
+        llm_embedding = nn.Dense(256, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
             llm_embedding
         )
@@ -283,6 +299,10 @@ class ActorCriticLinear(nn.Module):
 
     @nn.compact
     def __call__(self, x, llm_embedding):
+        llm_embedding = nn.Dense(256, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
+
         llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
             llm_embedding
         )
@@ -316,6 +336,10 @@ class ActorCriticOneLayer(nn.Module):
             bias_init=constant(0.0),
         )(x)
         actor_mean = activation(actor_mean)
+
+        llm_embedding = nn.Dense(256, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
             llm_embedding
@@ -367,6 +391,10 @@ class ActorCriticTwoLayer(nn.Module):
             bias_init=constant(0.0),
         )(actor_mean)
         actor_mean = activation(actor_mean)
+
+        llm_embedding = nn.Dense(256, kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            llm_embedding
+        )
 
         llm_embedding = nn.Dense(128, kernel_init=orthogonal(2), bias_init=constant(0.0))(
             llm_embedding
